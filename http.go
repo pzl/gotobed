@@ -33,7 +33,7 @@ func HTTP(ctx context.Context, log *logrus.Logger, pins Pins) {
 	if err := s.Start(ctx); err != nil {
 		log.WithError(err).Error("server error")
 	}
-	c, _ := context.WithTimeout(ctx, 2*time.Second)
+	c, _ := context.WithTimeout(context.Background(), 2*time.Second)
 	defer s.Shutdown(c)
 }
 
