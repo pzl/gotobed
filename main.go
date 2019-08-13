@@ -22,6 +22,15 @@ type Pins struct {
 }
 
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go func() {
+		sigint := make(chan os.Signal, 1)
+		signal.Notify(sigint, os.Interrupt, os.Kill, syscall.SIGQUIT)
+		<-sigint
+		cancel()
+	}()
+
 	pins, l, err := config()
 	if err != nil {
 		panic(err)
@@ -32,15 +41,6 @@ func main() {
 		panic(err)
 	}
 	defer cleanupPins(pins, l)
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	go func() {
-		sigint := make(chan os.Signal, 1)
-		signal.Notify(sigint, os.Interrupt, os.Kill, syscall.SIGQUIT)
-		<-sigint
-		cancel()
-	}()
 
 	var wg sync.WaitGroup
 
