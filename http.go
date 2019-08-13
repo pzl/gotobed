@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/pzl/mstk"
 	"github.com/pzl/mstk/logger"
 	"github.com/sirupsen/logrus"
@@ -24,7 +25,7 @@ type State struct {
 func setLog(s *mstk.Server) { s.Log = log }
 
 func HTTP(ctx context.Context, log *logrus.Logger, pins Pins) {
-	s := mstk.NewServer(mstk.Addr(":8088"), setLog)
+	s := mstk.NewServer(mstk.Addr(":80"), setLog)
 
 	r := chi.NewRouter()
 	routes(r, log, pins)
@@ -38,7 +39,13 @@ func HTTP(ctx context.Context, log *logrus.Logger, pins Pins) {
 }
 
 func routes(r *chi.Mux, log *logrus.Logger, pins Pins) {
-	r.Use(mstk.DefaultMiddleware(log)...)
+	r.Use(
+		middleware.RealIP, // X-Forwarded-For
+		middleware.RequestID,
+		middleware.RequestLogger(logger.NewChi(log)),
+		middleware.Heartbeat("/ping"),
+		middleware.Recoverer,
+	)
 
 	r.Get("/state", func(w http.ResponseWriter, r *http.Request) {
 		s, err := getState(pins)
@@ -55,6 +62,8 @@ func routes(r *chi.Mux, log *logrus.Logger, pins Pins) {
 			return
 		}
 
+		log := logger.GetLog(r)
+		log.WithField("state", req).Debug("setting state")
 		if err := setState(req, pins); err != nil {
 			writeErr(w, r, err, "error setting state", logrus.Fields{})
 			return
@@ -70,7 +79,14 @@ func routes(r *chi.Mux, log *logrus.Logger, pins Pins) {
 	})
 	r.Get("/schedule", todo)
 	r.Post("/schedule", todo)
-	r.Get("/", todo) // serve Vue/HTML
+
+	r.Get("/static/*", func(w http.ResponseWriter, r *http.Request) {
+		http.StripPrefix("/static/", http.FileServer(http.Dir("web/dist"))).ServeHTTP(w, r)
+	})
+
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web/dist/index.html")
+	})
 }
 
 func todo(w http.ResponseWriter, r *http.Request) {
@@ -91,6 +107,7 @@ func writeJSON(w http.ResponseWriter, r *http.Request, v interface{}) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	_, err := w.Write(buf.Bytes())
 	if err != nil {
 		log := logger.GetLog(r)
