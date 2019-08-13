@@ -28,11 +28,10 @@ func main() {
 	}
 	log = l
 
-	cleanup, err := setupPins(pins, l)
-	defer cleanup()
-	if err != nil {
+	if err := setupPins(pins, l); err != nil {
 		panic(err)
 	}
+	defer cleanupPins(pins, l)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -89,29 +88,31 @@ func config() (Pins, *logrus.Logger, error) {
 	return p, conf.Log, nil
 }
 
-func setupPins(p Pins, log *logrus.Logger) (func(), error) {
-	log.Debug("setting up pins")
-	enabled := make([]int, 0, 4)
-	cleanup := func() {
-		log.WithField("enabled", enabled).Debug("cleaning up gpio pins")
-		for _, e := range enabled {
-			log.WithField("pin", Pin(e).Pin()).Trace("unexporting pin")
-			if err := Pin(e).Disable(); err != nil {
-				log.WithError(err).WithField("pin", Pin(e).Pin()).Error("error unexporting pin")
-			}
-		}
-	}
+func setupPins(p Pins, log *logrus.Logger) error {
+	cleanupPins(p, log) // cleanup previous state
 
+	log.Debug("setting up pins")
 	pins := []int{p.Red, p.Yellow, p.Green, p.Lamp}
 	for _, pno := range pins {
 		if err := Pin(pno).Enable(); err != nil {
-			return cleanup, err
+			return err
 		}
-		enabled = append(enabled, pno)
 		if err := Pin(pno).Direction("out"); err != nil {
-			return cleanup, err
+			return err
 		}
 	}
 
-	return cleanup, nil
+	return nil
+}
+
+func cleanupPins(p Pins, log *logrus.Logger) {
+	pins := []int{p.Red, p.Yellow, p.Green, p.Lamp}
+	log.WithField("pins", pins).Debug("cleaning up gpio pins")
+	for _, pn := range pins {
+		log.WithField("pin", Pin(pn).Pin()).Trace("unexporting pin")
+		if err := Pin(pn).Disable(); err != nil {
+			log.WithError(err).WithField("pin", Pin(pn).Pin()).Error("error unexporting pin")
+		}
+	}
+	return
 }
