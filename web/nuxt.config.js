@@ -55,6 +55,11 @@ export default {
   ** Build configuration
   */
   build: {
+    postcss: {
+      plugins: {
+        'postcss-cssnext':{},
+      }
+    },
     /*
     ** You can extend webpack config here
     */
