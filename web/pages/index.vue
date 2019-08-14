@@ -16,6 +16,7 @@ export default {
 			green: false,
 			yellow: false,
 			lamp: false,
+			repeat: null,
 		}
 	},
 	methods: {
@@ -56,6 +57,12 @@ export default {
 	},
 	mounted: function() {
 		this.refresh()
+		this.repeat = setInterval(()=>{
+			this.refresh()
+		}, 60*1000)
+	},
+	beforeDestroy: function() {
+		clearInterval(this.repeat)
 	},
 	components: {
 		Light, Lamp
