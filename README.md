@@ -1,5 +1,7 @@
 <div align="center">
-    ![screenshot](screenshot.png)
+
+![screenshot](screenshot.png)
+
 </div>
 
 <h3 align="center">gotobed</h3>
