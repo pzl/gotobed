@@ -1,10 +1,6 @@
-<p align="center">
-  <a href="" rel="noopener">
-
-![screenshot](screenshot.png)
-
-
-</p>
+<div align="center">
+    ![screenshot](screenshot.png)
+</div>
 
 <h3 align="center">gotobed</h3>
 
