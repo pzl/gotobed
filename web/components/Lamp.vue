@@ -42,7 +42,7 @@
 
 	--bulb-width: 80px;
 	--bulb-height: 80px;
-	--bulb-color: lighten(crimson,5%);
+	--bulb-color: crimson;
 	--bulb-font-size: 1.9em;
 
 	--light-color: #FFDB55;
@@ -62,12 +62,10 @@
 
 .lamp {
 	/* from gist */
-	background: darken(#E2ECF1,15%);
  	transition: all var(--animation-delay) ease-in;
 }
 
 .lamp.on {
-	background: lighten(#E2ECF1,5%);
 }
 
 .lamp-wrap {
