@@ -1,0 +1,234 @@
+EESchema Schematic File Version 4
+LIBS:stoplight-cache
+EELAYER 29 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Connector:Raspberry_Pi_2_3 J
+U 1 1 5D4C2D07
+P 5700 3950
+F 0 "J" H 5700 5431 50  0000 C CNN
+F 1 "Raspberry_Pi_2_3" H 5700 5340 50  0000 C CNN
+F 2 "" H 5700 3950 50  0001 C CNN
+F 3 "https://www.raspberrypi.org/documentation/hardware/raspberrypi/schematics/rpi_SCH_3bplus_1p0_reduced.pdf" H 5700 3950 50  0001 C CNN
+	1    5700 3950
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:Lamp LA
+U 1 1 5D4C891B
+P 2800 2900
+F 0 "LA" H 2928 2946 50  0000 L CNN
+F 1 "Lamp" H 2928 2855 50  0000 L CNN
+F 2 "" V 2800 3000 50  0001 C CNN
+F 3 "~" V 2800 3000 50  0001 C CNN
+	1    2800 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L parts:VMA400 U?
+U 1 1 5D4CE366
+P 3650 4100
+F 0 "U?" V 2775 3825 50  0000 C CNN
+F 1 "VMA400" V 2866 3825 50  0000 C CNN
+F 2 "" H 4200 3900 50  0000 C CNN
+F 3 "" H 4200 3900 50  0001 C CNN
+	1    3650 4100
+	0    1    1    0   
+$EndComp
+$Comp
+L parts:TowerLight L?
+U 1 1 5D4D6B80
+P 2050 4100
+F 0 "L?" H 1792 4215 50  0000 C CNN
+F 1 "TowerLight" H 1792 4124 50  0000 C CNN
+F 2 "" H 2050 4100 50  0001 C CNN
+F 3 "" H 2050 4100 50  0001 C CNN
+	1    2050 4100
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Connector:Barrel_Jack J?
+U 1 1 5D4E692E
+P 1700 2900
+F 0 "J?" V 1711 3088 50  0000 L CNN
+F 1 "Barrel_Jack" V 1802 3088 50  0000 L CNN
+F 2 "" H 1750 2860 50  0001 C CNN
+F 3 "~" H 1750 2860 50  0001 C CNN
+	1    1700 2900
+	0    1    1    0   
+$EndComp
+$Comp
+L Switch:SW_SPDT SW?
+U 1 1 5D4FEEBD
+P 5050 6150
+F 0 "SW?" V 5004 5962 50  0000 R CNN
+F 1 "SW_SPDT" V 5095 5962 50  0000 R CNN
+F 2 "" H 5050 6150 50  0001 C CNN
+F 3 "~" H 5050 6150 50  0001 C CNN
+	1    5050 6150
+	0    -1   1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5D51CF92
+P 1600 3350
+F 0 "#PWR?" H 1600 3100 50  0001 C CNN
+F 1 "GND" H 1605 3177 50  0000 C CNN
+F 2 "" H 1600 3350 50  0001 C CNN
+F 3 "" H 1600 3350 50  0001 C CNN
+	1    1600 3350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1600 3350 1600 3200
+Wire Wire Line
+	5300 5350 5300 5250
+Wire Wire Line
+	3750 3750 3700 3750
+Wire Wire Line
+	3700 3900 3850 3900
+Wire Wire Line
+	4900 3550 4400 3550
+NoConn ~ 2450 4450
+NoConn ~ 3050 3650
+NoConn ~ 3050 4000
+NoConn ~ 3050 4400
+NoConn ~ 3050 4750
+Wire Wire Line
+	2950 3800 3050 3800
+Wire Wire Line
+	2950 4200 3050 4200
+Wire Wire Line
+	2950 4550 3050 4550
+Wire Wire Line
+	3050 4650 2600 4650
+Wire Wire Line
+	2600 4500 2750 4500
+Wire Wire Line
+	2750 4500 2750 4300
+Wire Wire Line
+	2750 4300 3050 4300
+Wire Wire Line
+	2600 4350 2700 4350
+Wire Wire Line
+	2700 4350 2700 3900
+Wire Wire Line
+	2700 3900 3050 3900
+$Comp
+L parts:Mains V?
+U 1 1 5D85B4E7
+P 2600 2600
+F 0 "V?" H 2600 2173 50  0000 C CNN
+F 1 "Mains" H 2600 2264 50  0000 C CNN
+F 2 "" H 2600 2600 50  0001 C CNN
+F 3 "" H 2600 2600 50  0001 C CNN
+	1    2600 2600
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	2800 2450 2800 2700
+Wire Wire Line
+	2800 3100 2800 3450
+Wire Wire Line
+	2800 3450 3050 3450
+Wire Wire Line
+	3050 3550 2400 3550
+Wire Wire Line
+	2400 3550 2400 2450
+$Comp
+L power:GND #PWR?
+U 1 1 5D8A23E0
+P 5150 6450
+F 0 "#PWR?" H 5150 6200 50  0001 C CNN
+F 1 "GND" H 5155 6277 50  0000 C CNN
+F 2 "" H 5150 6450 50  0001 C CNN
+F 3 "" H 5150 6450 50  0001 C CNN
+	1    5150 6450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5150 6450 5150 6350
+NoConn ~ 4950 6350
+Wire Wire Line
+	4900 4650 4900 5950
+Wire Wire Line
+	4900 5950 5050 5950
+Text Notes 4900 5750 1    50   ~ 0
+internal pullup
+Wire Wire Line
+	3700 4500 4550 4500
+Wire Wire Line
+	4900 4450 4550 4450
+Wire Wire Line
+	4550 4450 4550 4500
+Wire Wire Line
+	3700 4350 4900 4350
+Wire Wire Line
+	3700 4200 3700 4250
+Wire Wire Line
+	3700 4250 4900 4250
+Wire Wire Line
+	3700 4050 4400 4050
+Wire Wire Line
+	4400 4050 4400 3550
+Wire Wire Line
+	5500 2650 3750 2650
+Wire Wire Line
+	3750 2650 3750 3750
+NoConn ~ 2600 4850
+$Comp
+L power:GND #PWR?
+U 1 1 5D558142
+P 2950 4550
+F 0 "#PWR?" H 2950 4300 50  0001 C CNN
+F 1 "GND" H 2955 4377 50  0000 C CNN
+F 2 "" H 2950 4550 50  0001 C CNN
+F 3 "" H 2950 4550 50  0001 C CNN
+	1    2950 4550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5300 5350 3850 5350
+Wire Wire Line
+	3850 5350 3850 3900
+Wire Wire Line
+	1800 3200 1800 3700
+Wire Wire Line
+	1800 3700 2600 3700
+Wire Wire Line
+	2600 3700 2600 4250
+$Comp
+L power:GND #PWR?
+U 1 1 5D55F513
+P 2950 4200
+F 0 "#PWR?" H 2950 3950 50  0001 C CNN
+F 1 "GND" H 2955 4027 50  0000 C CNN
+F 2 "" H 2950 4200 50  0001 C CNN
+F 3 "" H 2950 4200 50  0001 C CNN
+	1    2950 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5D55F9AA
+P 2950 3800
+F 0 "#PWR?" H 2950 3550 50  0001 C CNN
+F 1 "GND" H 2955 3627 50  0000 C CNN
+F 2 "" H 2950 3800 50  0001 C CNN
+F 3 "" H 2950 3800 50  0001 C CNN
+	1    2950 3800
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC
