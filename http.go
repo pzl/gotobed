@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -24,11 +26,11 @@ type State struct {
 
 func setLog(s *mstk.Server) { s.Log = log }
 
-func HTTP(ctx context.Context, log *logrus.Logger, pins Pins) {
-	s := mstk.NewServer(mstk.Addr(":80"), setLog)
+func HTTP(ctx context.Context, log *logrus.Logger, pins Pins, sch Scheduler) {
+	s := mstk.NewServer(mstk.Addr(":8088"), setLog)
 
 	r := chi.NewRouter()
-	routes(r, log, pins)
+	routes(r, log, pins, sch)
 	s.Http.Handler = r
 
 	if err := s.Start(ctx); err != nil {
@@ -39,7 +41,7 @@ func HTTP(ctx context.Context, log *logrus.Logger, pins Pins) {
 	defer s.Shutdown(c)
 }
 
-func routes(r *chi.Mux, log *logrus.Logger, pins Pins) {
+func routes(r *chi.Mux, log *logrus.Logger, pins Pins, s Scheduler) {
 	r.Use(
 		middleware.RealIP, // X-Forwarded-For
 		middleware.RequestID,
@@ -78,8 +80,43 @@ func routes(r *chi.Mux, log *logrus.Logger, pins Pins) {
 
 		writeJSON(w, r, s)
 	})
-	r.Get("/schedule", todo)
-	r.Post("/schedule", todo)
+
+	fetchSchedule := func(w http.ResponseWriter, r *http.Request) {
+		sched, err := s.Get()
+		if err != nil {
+			writeErr(w, r, err, "fetching schedule failed", logrus.Fields{})
+			return
+		}
+		writeJSON(w, r, sched)
+	}
+
+	// inject scheduler
+	r.Get("/schedule", fetchSchedule)
+	r.Post("/schedule", func(w http.ResponseWriter, r *http.Request) {
+		var req Action
+		req.ID = randID()
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			writeErr(w, r, err, "decoding request failed", logrus.Fields{})
+			return
+		}
+		log := logger.GetLog(r)
+		log.WithField("req", req).Debug("schedule set request")
+		if err := s.Add(req); err != nil {
+			writeErr(w, r, err, "err setting schedule action", logrus.Fields{})
+			return
+		}
+		fetchSchedule(w, r)
+		return
+	})
+	r.Delete("/schedule/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+		if err := s.Delete(id); err != nil {
+			writeErr(w, r, err, "deleting action", logrus.Fields{})
+			return
+		}
+		fetchSchedule(w, r)
+		return
+	})
 
 	r.Get("/static/*", func(w http.ResponseWriter, r *http.Request) {
 		http.StripPrefix("/static/", http.FileServer(http.Dir("web/dist"))).ServeHTTP(w, r)
@@ -157,4 +194,12 @@ func setState(s State, pins Pins) error {
 		return fmt.Errorf("error setting state for pin %d: %v", pins.Lamp, err)
 	}
 	return nil
+}
+
+func randID() string {
+	buf := make([]byte, 8)
+	if _, err := rand.Read(buf); err != nil {
+		return time.Now().String()
+	}
+	return hex.EncodeToString(buf)
 }

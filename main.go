@@ -42,11 +42,26 @@ func main() {
 	}
 	defer cleanupPins(pins, l)
 
+	sch, err := NewScheduler(pins, l)
+	if err != nil {
+		panic(err)
+	}
+
 	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		if err := sch.Start(ctx); err != nil {
+			log.WithError(err).Error("got error running scheduler")
+		}
+		wg.Done()
+	}()
+
+	// todo: advertise IP over zerconf?
+	// todo: how to accept wifi credentials when traveling
 
 	wg.Add(1)
 	go func() {
-		HTTP(ctx, l, pins)
+		HTTP(ctx, l, pins, sch)
 		log.Info("HTTP service exited")
 		wg.Done()
 	}()
