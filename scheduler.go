@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"sync"
 	"time"
@@ -13,6 +14,35 @@ type Action struct {
 	ID    string    `json:"id,omitempty"`
 	State State     `json:"state"`
 	T     time.Time `json:"time"`
+}
+
+func (a Action) MarshalJSON() ([]byte, error) {
+	JSAction := struct {
+		ID    string `json:"id,omitempty"`
+		State State  `json:"state"`
+		T     int64  `json:"time"`
+	}{
+		ID:    a.ID,
+		State: a.State,
+		T:     a.T.Unix(),
+	}
+	return json.Marshal(JSAction)
+}
+
+func (a *Action) UnmarshalJSON(data []byte) error {
+	var j struct {
+		ID    string `json:"id,omitempty"`
+		State State  `json:"state"`
+		T     int64  `json:"time"`
+	}
+	if err := json.Unmarshal(data, &j); err != nil {
+		return err
+	}
+
+	a.ID = j.ID
+	a.State = j.State
+	a.T = time.Unix(j.T, 0)
+	return nil
 }
 
 type Scheduler struct {
