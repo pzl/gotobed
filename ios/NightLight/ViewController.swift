@@ -47,47 +47,42 @@ class ViewController: UIViewController {
         return v
     }()
     
-    var centerTraffic: NSLayoutConstraint? = nil
-    var leftTraffic: NSLayoutConstraint? = nil
-    var topTraffic: NSLayoutConstraint? = nil
-    var CYTraffic: NSLayoutConstraint? = nil
+    var centerTraffic: NSLayoutConstraint!
+    var leftTraffic: NSLayoutConstraint!
+    var topTraffic: NSLayoutConstraint!
+    var CYTraffic: NSLayoutConstraint!
     
-    var lampCenter: NSLayoutConstraint? = nil
-    var lampRight: NSLayoutConstraint? = nil
-    var lampBottom: NSLayoutConstraint? = nil
-    var CYlamp: NSLayoutConstraint? = nil
+    var lampCenter: NSLayoutConstraint!
+    var lampRight: NSLayoutConstraint!
+    var lampBottom: NSLayoutConstraint!
+    var CYlamp: NSLayoutConstraint!
     
-    override func viewDidLoad() {
-        print("view did load")
-        super.viewDidLoad()
-        self.view.backgroundColor = .systemBackground
-        
+    override func loadView() {
+        super.loadView()
         self.view.addSubview(trafficBox)
         self.view.addSubview(lampView)
-        let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
-        lampView.addGestureRecognizer(tap)
+        
         lampView.layer.cornerRadius = 20
         
         let vs: [Light] = [redView, yellowView, greenView]
         for i in vs {
             self.view.addSubview(i)
-            let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
-            i.addGestureRecognizer(tap)
-            
-            i.centerXAnchor.constraint(equalTo: trafficBox.centerXAnchor).isActive = true
-            i.widthAnchor.constraint(equalTo: trafficBox.widthAnchor, multiplier: 0.6).isActive = true
-            i.heightAnchor.constraint(equalTo: i.widthAnchor).isActive = true
+            NSLayoutConstraint.activate([
+                i.centerXAnchor.constraint(equalTo: trafficBox.centerXAnchor),
+                i.widthAnchor.constraint(equalTo: trafficBox.widthAnchor, multiplier: 0.6),
+                i.heightAnchor.constraint(equalTo: i.widthAnchor)
+            ])
         }
-
+        
         self.centerTraffic = trafficBox.centerXAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerXAnchor)
-        self.centerTraffic?.isActive = !UIDevice.current.orientation.isLandscape
+        self.centerTraffic.isActive = !UIDevice.current.orientation.isLandscape
         self.leftTraffic = trafficBox.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 20)
-        self.leftTraffic?.isActive = UIDevice.current.orientation.isLandscape
+        self.leftTraffic.isActive = UIDevice.current.orientation.isLandscape
 
         self.topTraffic =  trafficBox.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 2)
-        self.topTraffic?.isActive = !UIDevice.current.orientation.isLandscape
+        self.topTraffic.isActive = !UIDevice.current.orientation.isLandscape
         self.CYTraffic = trafficBox.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor)
-        self.CYTraffic?.isActive = UIDevice.current.orientation.isLandscape
+        self.CYTraffic.isActive = UIDevice.current.orientation.isLandscape
 
         trafficBox.widthAnchor.constraint(equalToConstant: 80).isActive = true
         trafficBox.heightAnchor.constraint(equalToConstant: 200).isActive = true
@@ -98,46 +93,43 @@ class ViewController: UIViewController {
         greenView.bottomAnchor.constraint(equalTo: trafficBox.bottomAnchor, constant: -lightpad).isActive = true
         
         self.lampCenter = lampView.centerXAnchor.constraint(equalTo: trafficBox.centerXAnchor)
-        self.lampCenter?.isActive = !UIDevice.current.orientation.isLandscape
+        self.lampCenter.isActive = !UIDevice.current.orientation.isLandscape
         self.lampRight = lampView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -20)
-        self.lampRight?.isActive = UIDevice.current.orientation.isLandscape
+        self.lampRight.isActive = UIDevice.current.orientation.isLandscape
         
         self.lampBottom = lampView.topAnchor.constraint(equalTo: trafficBox.bottomAnchor, constant: 80)
-        self.lampBottom?.isActive = !UIDevice.current.orientation.isLandscape
+        self.lampBottom.isActive = !UIDevice.current.orientation.isLandscape
         self.CYlamp = lampView.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor)
-        self.CYlamp?.isActive = UIDevice.current.orientation.isLandscape
+        self.CYlamp.isActive = UIDevice.current.orientation.isLandscape
         
         lampView.heightAnchor.constraint(equalToConstant: 60).isActive = true
         lampView.widthAnchor.constraint(equalToConstant: 60).isActive = true
+    }
+    
+    override func viewDidLoad() {
+        print("view did load")
+        super.viewDidLoad()
+        self.view.backgroundColor = .systemBackground
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
+        lampView.addGestureRecognizer(tap)
+        
+        let vs: [Light] = [redView, yellowView, greenView]
+        for i in vs {
+            let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
+            i.addGestureRecognizer(tap)
+        }
     }
     
     // listen for device rotation
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         if UIDevice.current.orientation.isLandscape {
-            self.centerTraffic?.isActive = false
-            self.leftTraffic?.isActive = true
-            
-            self.lampCenter?.isActive = false
-            self.lampRight?.isActive = true
-            
-            self.lampBottom?.isActive = false
-            self.CYlamp?.isActive = true
-            
-            self.topTraffic?.isActive = false
-            self.CYTraffic?.isActive = true
+            NSLayoutConstraint.deactivate([self.centerTraffic, self.lampCenter, self.lampBottom, self.topTraffic])
+            NSLayoutConstraint.activate([self.leftTraffic, self.lampRight, self.CYlamp, self.CYTraffic])
         } else {
-            self.leftTraffic?.isActive = false
-            self.centerTraffic?.isActive = true
-            
-            self.lampRight?.isActive = false
-            self.lampCenter?.isActive = true
-            
-            self.CYlamp?.isActive = false
-            self.lampBottom?.isActive = true
-            
-            self.CYTraffic?.isActive = false
-            self.topTraffic?.isActive = true
+            NSLayoutConstraint.deactivate([self.leftTraffic, self.lampRight, self.CYlamp, self.CYTraffic])
+            NSLayoutConstraint.activate([self.centerTraffic, self.lampCenter, self.lampBottom, self.topTraffic])
         }
     }
     
