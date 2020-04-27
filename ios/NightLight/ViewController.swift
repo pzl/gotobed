@@ -34,10 +34,12 @@ class ViewController: UIViewController {
         s.layer.cornerRadius = 10
         s.translatesAutoresizingMaskIntoConstraints = false
         s.addSubview(ai)
-        ai.centerXAnchor.constraint(equalTo: s.centerXAnchor).isActive = true
-        ai.centerYAnchor.constraint(equalTo: s.centerYAnchor).isActive = true
-        ai.widthAnchor.constraint(equalTo: s.widthAnchor).isActive = true
-        ai.heightAnchor.constraint(equalTo: s.heightAnchor).isActive = true
+        NSLayoutConstraint.activate([
+            ai.centerXAnchor.constraint(equalTo: s.centerXAnchor),
+            ai.centerYAnchor.constraint(equalTo: s.centerYAnchor),
+            ai.widthAnchor.constraint(equalTo: s.widthAnchor),
+            ai.heightAnchor.constraint(equalTo: s.heightAnchor),
+        ])
         return s
     }()
     
@@ -75,35 +77,34 @@ class ViewController: UIViewController {
         }
         
         self.centerTraffic = trafficBox.centerXAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerXAnchor)
-        self.centerTraffic.isActive = !UIDevice.current.orientation.isLandscape
         self.leftTraffic = trafficBox.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 20)
-        self.leftTraffic.isActive = UIDevice.current.orientation.isLandscape
-
         self.topTraffic =  trafficBox.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 2)
-        self.topTraffic.isActive = !UIDevice.current.orientation.isLandscape
         self.CYTraffic = trafficBox.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor)
-        self.CYTraffic.isActive = UIDevice.current.orientation.isLandscape
 
-        trafficBox.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        trafficBox.heightAnchor.constraint(equalToConstant: 200).isActive = true
         
         let lightpad: CGFloat = 10
-        redView.topAnchor.constraint(equalTo: trafficBox.topAnchor, constant: lightpad).isActive = true
-        yellowView.centerYAnchor.constraint(equalTo: trafficBox.centerYAnchor).isActive = true
-        greenView.bottomAnchor.constraint(equalTo: trafficBox.bottomAnchor, constant: -lightpad).isActive = true
+
+        NSLayoutConstraint.activate([
+            trafficBox.widthAnchor.constraint(equalToConstant: 80),
+            trafficBox.heightAnchor.constraint(equalToConstant: 200),
+            redView.topAnchor.constraint(equalTo: trafficBox.topAnchor, constant: lightpad),
+            yellowView.centerYAnchor.constraint(equalTo: trafficBox.centerYAnchor),
+            greenView.bottomAnchor.constraint(equalTo: trafficBox.bottomAnchor, constant: -lightpad),
+            lampView.heightAnchor.constraint(equalToConstant: 60),
+            lampView.widthAnchor.constraint(equalToConstant: 60),
+        ])
         
         self.lampCenter = lampView.centerXAnchor.constraint(equalTo: trafficBox.centerXAnchor)
-        self.lampCenter.isActive = !UIDevice.current.orientation.isLandscape
         self.lampRight = lampView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -20)
-        self.lampRight.isActive = UIDevice.current.orientation.isLandscape
-        
         self.lampBottom = lampView.topAnchor.constraint(equalTo: trafficBox.bottomAnchor, constant: 80)
-        self.lampBottom.isActive = !UIDevice.current.orientation.isLandscape
         self.CYlamp = lampView.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor)
-        self.CYlamp.isActive = UIDevice.current.orientation.isLandscape
         
-        lampView.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        lampView.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        if UIDevice.current.orientation.isLandscape {
+            NSLayoutConstraint.activate([self.leftTraffic, self.CYTraffic, self.lampRight, self.CYlamp])
+        } else {
+            NSLayoutConstraint.activate([self.centerTraffic, self.topTraffic, lampCenter, self.lampBottom])
+        }
+
     }
     
     override func viewDidLoad() {
@@ -141,8 +142,10 @@ class ViewController: UIViewController {
             self.failView.addSubview(iv)
             self.view.addSubview(self.failView)
             //self.failView.center = self.view.center // if not using constraints
-            self.failView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
-            self.failView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
+            NSLayoutConstraint.activate([
+                self.failView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+                self.failView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+            ])
         }
     }
     func hideFail() {
@@ -152,10 +155,12 @@ class ViewController: UIViewController {
     func spin() {
         if !self.spinner.isDescendant(of: self.view){
             self.view.addSubview(self.spinner)
-            self.spinner.centerXAnchor.constraint(equalTo: self.trafficBox.centerXAnchor).isActive = true
-            self.spinner.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
-            self.spinner.widthAnchor.constraint(equalTo: self.trafficBox.widthAnchor).isActive = true
-            self.spinner.heightAnchor.constraint(equalTo: self.spinner.widthAnchor).isActive = true
+            NSLayoutConstraint.activate([
+                self.spinner.centerXAnchor.constraint(equalTo: self.trafficBox.centerXAnchor),
+                self.spinner.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 40),
+                self.spinner.widthAnchor.constraint(equalTo: self.trafficBox.widthAnchor),
+                self.spinner.heightAnchor.constraint(equalTo: self.spinner.widthAnchor),
+            ])
         }
     }
     
