@@ -47,6 +47,15 @@ class ViewController: UIViewController {
         return v
     }()
     
+    var centerTraffic: NSLayoutConstraint? = nil
+    var leftTraffic: NSLayoutConstraint? = nil
+    var topTraffic: NSLayoutConstraint? = nil
+    var CYTraffic: NSLayoutConstraint? = nil
+    
+    var lampCenter: NSLayoutConstraint? = nil
+    var lampRight: NSLayoutConstraint? = nil
+    var lampBottom: NSLayoutConstraint? = nil
+    var CYlamp: NSLayoutConstraint? = nil
     
     override func viewDidLoad() {
         print("view did load")
@@ -70,9 +79,17 @@ class ViewController: UIViewController {
             i.heightAnchor.constraint(equalTo: i.widthAnchor).isActive = true
         }
 
-        trafficBox.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        self.centerTraffic = trafficBox.centerXAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerXAnchor)
+        self.centerTraffic?.isActive = !UIDevice.current.orientation.isLandscape
+        self.leftTraffic = trafficBox.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 20)
+        self.leftTraffic?.isActive = UIDevice.current.orientation.isLandscape
+
+        self.topTraffic =  trafficBox.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 2)
+        self.topTraffic?.isActive = !UIDevice.current.orientation.isLandscape
+        self.CYTraffic = trafficBox.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor)
+        self.CYTraffic?.isActive = UIDevice.current.orientation.isLandscape
+
         trafficBox.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        trafficBox.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 2).isActive = true
         trafficBox.heightAnchor.constraint(equalToConstant: 200).isActive = true
         
         let lightpad: CGFloat = 10
@@ -80,11 +97,48 @@ class ViewController: UIViewController {
         yellowView.centerYAnchor.constraint(equalTo: trafficBox.centerYAnchor).isActive = true
         greenView.bottomAnchor.constraint(equalTo: trafficBox.bottomAnchor, constant: -lightpad).isActive = true
         
+        self.lampCenter = lampView.centerXAnchor.constraint(equalTo: trafficBox.centerXAnchor)
+        self.lampCenter?.isActive = !UIDevice.current.orientation.isLandscape
+        self.lampRight = lampView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -20)
+        self.lampRight?.isActive = UIDevice.current.orientation.isLandscape
+        
+        self.lampBottom = lampView.topAnchor.constraint(equalTo: trafficBox.bottomAnchor, constant: 80)
+        self.lampBottom?.isActive = !UIDevice.current.orientation.isLandscape
+        self.CYlamp = lampView.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor)
+        self.CYlamp?.isActive = UIDevice.current.orientation.isLandscape
+        
         lampView.heightAnchor.constraint(equalToConstant: 60).isActive = true
         lampView.widthAnchor.constraint(equalToConstant: 60).isActive = true
-        lampView.centerXAnchor.constraint(equalTo: trafficBox.centerXAnchor).isActive = true
-        lampView.topAnchor.constraint(equalTo: trafficBox.bottomAnchor, constant: 80).isActive = true
-        
+    }
+    
+    // listen for device rotation
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        if UIDevice.current.orientation.isLandscape {
+            self.centerTraffic?.isActive = false
+            self.leftTraffic?.isActive = true
+            
+            self.lampCenter?.isActive = false
+            self.lampRight?.isActive = true
+            
+            self.lampBottom?.isActive = false
+            self.CYlamp?.isActive = true
+            
+            self.topTraffic?.isActive = false
+            self.CYTraffic?.isActive = true
+        } else {
+            self.leftTraffic?.isActive = false
+            self.centerTraffic?.isActive = true
+            
+            self.lampRight?.isActive = false
+            self.lampCenter?.isActive = true
+            
+            self.CYlamp?.isActive = false
+            self.lampBottom?.isActive = true
+            
+            self.CYTraffic?.isActive = false
+            self.topTraffic?.isActive = true
+        }
     }
     
     func showFail() {
