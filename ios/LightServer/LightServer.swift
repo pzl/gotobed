@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-fileprivate let host = "http://192.168.1.170"  // "http://192.168.1.176"
+fileprivate let host = "http://stop.light"  // "http://192.168.1.176"
 
 public struct TrafficState: Codable {
     public var red: Bool
