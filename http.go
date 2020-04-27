@@ -26,7 +26,7 @@ type State struct {
 
 func setLog(s *mstk.Server) { s.Log = log }
 
-func HTTP(ctx context.Context, log *logrus.Logger, pins Pins, sch Scheduler) {
+func HTTP(ctx context.Context, log *logrus.Logger, pins Pins, sch *Scheduler) {
 	s := mstk.NewServer(mstk.Addr(":8088"), setLog)
 
 	r := chi.NewRouter()
@@ -41,7 +41,7 @@ func HTTP(ctx context.Context, log *logrus.Logger, pins Pins, sch Scheduler) {
 	defer s.Shutdown(c)
 }
 
-func routes(r *chi.Mux, log *logrus.Logger, pins Pins, s Scheduler) {
+func routes(r *chi.Mux, log *logrus.Logger, pins Pins, s *Scheduler) {
 	r.Use(
 		middleware.RealIP, // X-Forwarded-For
 		middleware.RequestID,

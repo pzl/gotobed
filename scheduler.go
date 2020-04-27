@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"errors"
+	"sync"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -14,11 +16,11 @@ type Action struct {
 }
 
 type Scheduler struct {
-	addTimer chan Action
-	delTimer chan string
-	sched    map[string]Timer
-	p        Pins
-	l        *logrus.Logger
+	add   chan TimerRequest
+	sched map[string]Timer
+	p     Pins
+	l     *logrus.Logger
+	mu    sync.Mutex
 }
 
 type Timer struct {
@@ -28,53 +30,47 @@ type Timer struct {
 	cancel func()
 }
 
-func NewScheduler(p Pins, log *logrus.Logger) (Scheduler, error) {
+type TimerRequest struct {
+	T  Timer
+	OK chan struct{}
+}
+
+func NewScheduler(p Pins, log *logrus.Logger) (*Scheduler, error) {
 	s := Scheduler{
-		sched:    make(map[string]Timer),
-		addTimer: make(chan Action),
-		delTimer: make(chan string),
-		p:        p,
-		l:        log,
+		sched: make(map[string]Timer),
+		add:   make(chan TimerRequest),
+		p:     p,
+		l:     log,
+		mu:    sync.Mutex{},
 	}
 
-	return s, nil
+	return &s, nil
 }
 
 func (s *Scheduler) Start(ctx context.Context) error {
 	for {
 		select {
-		case a := <-s.addTimer:
-			if a.T.Before(time.Now()) {
-				s.l.WithField("action_time", a.T).Debug("requested time is before current time. Ignoring request")
-				continue
-			}
-			s.l.Debug("creating timer")
-			diff := a.T.Sub(time.Now())
-			s.l.WithField("diff", diff).Info("timer difference")
-			t := time.NewTimer(a.T.Sub(time.Now()))
-			c, cancel := context.WithCancel(ctx)
-			s.sched[a.ID] = Timer{A: a, T: t, C: c, cancel: cancel}
+		case tr := <-s.add:
+			t := tr.T
+			t.C, t.cancel = context.WithCancel(ctx)
+			s.mu.Lock()
+			s.sched[t.A.ID] = t
+			s.mu.Unlock()
+			tr.OK <- struct{}{}
 			go func() {
+				defer t.cancel() // clean up regardless
 				s.l.Debug("spawned timer waiter thread")
 				select {
-				case <-t.C:
+				case <-t.T.C:
 					s.l.Debug("timer expired for action, performing state change")
-					setState(a.State, s.p)
-					delete(s.sched, a.ID)
-				case <-c.Done():
-					s.l.Debug("timer change canceled. Listener exiting")
-					// timer canceled. exit goroutine
+					setState(t.A.State, s.p)
+					s.mu.Lock()
+					delete(s.sched, t.A.ID)
+					s.mu.Unlock()
+				case <-t.C.Done():
+					s.l.Debug("timer canceled, not performing changes")
 				}
 			}()
-		case id := <-s.delTimer:
-			t, ok := s.sched[id]
-			if !ok {
-				continue
-			}
-			// stop timer, cancel listener, remove from schedule
-			t.T.Stop()
-			t.cancel()
-			delete(s.sched, id)
 		case <-ctx.Done():
 			return nil
 		}
@@ -82,19 +78,44 @@ func (s *Scheduler) Start(ctx context.Context) error {
 }
 
 func (s *Scheduler) Get() ([]Action, error) {
+	s.mu.Lock()
 	a := make([]Action, 0, len(s.sched))
 	for _, k := range s.sched {
 		a = append(a, k.A)
 	}
+	s.mu.Unlock()
 	return a, nil
 }
 
 func (s *Scheduler) Delete(id string) error {
-	s.delTimer <- id
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	t, ok := s.sched[id]
+	if !ok {
+		return errors.New("no such timer")
+	}
+	// stop timer, cancel listener, remove from schedule
+	t.T.Stop()
+	t.cancel()
+	delete(s.sched, id)
 	return nil
 }
 
 func (s *Scheduler) Add(a Action) error {
-	s.addTimer <- a
+	// time check
+	if a.T.Before(time.Now()) {
+		return errors.New("action has passed")
+	}
+
+	// send timer, wait for it to be added to the schedule and return
+	tr := TimerRequest{
+		T: Timer{
+			A: a,
+			T: time.NewTimer(a.T.Sub(time.Now())),
+		},
+		OK: make(chan struct{}),
+	}
+	s.add <- tr
+	<-tr.OK
 	return nil
 }
