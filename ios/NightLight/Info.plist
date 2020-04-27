@@ -31,6 +31,19 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconTypeUpdate</string>
+			<key>UIApplicationShortcutItemSubtitle</key>
+			<string>Toggle the lamp</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Lamp</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>Lamp</string>
+		</dict>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -51,19 +64,6 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UIApplicationShortcutItems</key>
-	<array>
-		<dict>
-			<key>UIApplicationShortcutItemType</key>
-			<string>Lamp</string>
-			<key>UIApplicationShortcutItemIconType</key>
-			<string>UIApplicationShortcutIconTypeUpdate</string>
-			<key>UIApplicationShortcutItemTitle</key>
-			<string>Lamp</string>
-			<key>UIApplicationShortcutItemSubtitle</key>
-			<string>Toggle the lamp</string>
-		</dict>
 	</array>
 </dict>
 </plist>
