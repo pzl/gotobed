@@ -45,7 +45,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         print("became active")
+        vc?.hideFail()
         vc?.getState { [weak self] state in
+            DispatchQueue.main.async {
+                self?.vc?.stopspin()
+            }
             if var state = state {
                 if let action = self?.shortcutAction {
                     switch action.type {
@@ -59,7 +63,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 
                 self?.vc?.handleState(state)
             } else {
-                print("could not get state")
+                DispatchQueue.main.async {
+                    self?.vc?.showFail()
+                }
+                print("failed to fetch")
             }
         }
     }

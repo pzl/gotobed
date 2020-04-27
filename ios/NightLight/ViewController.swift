@@ -24,10 +24,32 @@ class ViewController: UIViewController {
     lazy var greenView = CircleLight(onColor: .green, offColor: .trafficGreen)
     lazy var lampView = Light(onColor: .systemYellow, offColor: .systemGray)
     
-    let host = "http://192.168.1.10" // "http://192.168.1.172"
+    lazy var spinner: UIView = {
+        let ai = UIActivityIndicatorView(style: .large)
+        ai.startAnimating()
+        ai.translatesAutoresizingMaskIntoConstraints = false
+        
+        let s = UIView(frame: .zero)
+        s.backgroundColor = UIColor.init(red: 0.9, green: 0.9, blue: 0.9, alpha: 0.5)
+        s.layer.cornerRadius = 10
+        s.translatesAutoresizingMaskIntoConstraints = false
+        s.addSubview(ai)
+        ai.centerXAnchor.constraint(equalTo: s.centerXAnchor).isActive = true
+        ai.centerYAnchor.constraint(equalTo: s.centerYAnchor).isActive = true
+        ai.widthAnchor.constraint(equalTo: s.widthAnchor).isActive = true
+        ai.heightAnchor.constraint(equalTo: s.heightAnchor).isActive = true
+        return s
+    }()
+    
+    lazy var failView: UIView = {
+        let v = UIView(frame: .zero)
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
+    }()
+    
     
     override func viewDidLoad() {
-        print("view loaded")
+        print("view did load")
         super.viewDidLoad()
         self.view.backgroundColor = .systemBackground
         
@@ -65,18 +87,48 @@ class ViewController: UIViewController {
         
     }
     
+    func showFail() {
+        if !self.failView.isDescendant(of: self.view){
+            let symbolSize = UIImage.SymbolConfiguration(pointSize: 32, weight: .bold, scale: .large)
+            let ic = UIImage.init(systemName: "exclamationmark.triangle.fill", withConfiguration: symbolSize)?.withTintColor(.red, renderingMode: .alwaysOriginal)
+            let iv = UIImageView(image: ic)
+            self.failView.addSubview(iv)
+            self.view.addSubview(self.failView)
+            //self.failView.center = self.view.center // if not using constraints
+            self.failView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+            self.failView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
+        }
+    }
+    func hideFail() {
+        self.failView.removeFromSuperview()
+    }
+    
+    func spin() {
+        if !self.spinner.isDescendant(of: self.view){
+            self.view.addSubview(self.spinner)
+            self.spinner.centerXAnchor.constraint(equalTo: self.trafficBox.centerXAnchor).isActive = true
+            self.spinner.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
+            self.spinner.widthAnchor.constraint(equalTo: self.trafficBox.widthAnchor).isActive = true
+            self.spinner.heightAnchor.constraint(equalTo: self.spinner.widthAnchor).isActive = true
+        }
+    }
+    
+    func stopspin() {
+        self.spinner.removeFromSuperview()
+    }
+    
     func reloadState() {
         print("getting state")
         self.getState { state in
             if let state = state {
                 self.handleState(state)
-            } else {
-                print("could not get state")
             }
         }
     }
     
     func getState(_ done: @escaping (TrafficState?) -> Void){
+        print("getting state")
+        self.spin()
         LSGetState(done)
     }
     
