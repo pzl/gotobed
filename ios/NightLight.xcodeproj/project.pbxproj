@@ -13,7 +13,6 @@
 		379A345A2346A9380025E6AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 379A34592346A9380025E6AF /* Assets.xcassets */; };
 		379A34682346A9380025E6AF /* NightLightTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379A34672346A9380025E6AF /* NightLightTests.swift */; };
 		379A34732346A9380025E6AF /* NightLightUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379A34722346A9380025E6AF /* NightLightUITests.swift */; };
-		379A348323477B3B0025E6AF /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 379A348223477B3B0025E6AF /* Default-568h@2x.png */; };
 		379A348D23491AEB0025E6AF /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379A348C23491AEB0025E6AF /* NotificationCenter.framework */; };
 		379A349023491AEB0025E6AF /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379A348F23491AEB0025E6AF /* TodayViewController.swift */; };
 		379A349723491AEB0025E6AF /* NightLight Widget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 379A348A23491AEB0025E6AF /* NightLight Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -23,6 +22,7 @@
 		379A34B623491C700025E6AF /* LightServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379A34A123491C6F0025E6AF /* LightServer.framework */; };
 		379A34B723491C700025E6AF /* LightServer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 379A34A123491C6F0025E6AF /* LightServer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		379A34C023491D7C0025E6AF /* LightServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379A34BF23491D7C0025E6AF /* LightServer.swift */; };
+		37EA3A5B244FAA65004C97BA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 37EA3A5A244FAA65004C97BA /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,7 +108,6 @@
 		379A346E2346A9380025E6AF /* NightLightUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NightLightUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		379A34722346A9380025E6AF /* NightLightUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightLightUITests.swift; sourceTree = "<group>"; };
 		379A34742346A9380025E6AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		379A348223477B3B0025E6AF /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		379A348A23491AEB0025E6AF /* NightLight Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "NightLight Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		379A348C23491AEB0025E6AF /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		379A348F23491AEB0025E6AF /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
@@ -120,6 +119,7 @@
 		379A34B023491C700025E6AF /* LightServerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightServerTests.swift; sourceTree = "<group>"; };
 		379A34B223491C700025E6AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		379A34BF23491D7C0025E6AF /* LightServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightServer.swift; sourceTree = "<group>"; };
+		37EA3A5A244FAA65004C97BA /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,7 +174,7 @@
 		379A34442346A9370025E6AF = {
 			isa = PBXGroup;
 			children = (
-				379A348223477B3B0025E6AF /* Default-568h@2x.png */,
+				37EA3A5A244FAA65004C97BA /* LaunchScreen.storyboard */,
 				379A344F2346A9370025E6AF /* NightLight */,
 				379A34662346A9380025E6AF /* NightLightTests */,
 				379A34712346A9380025E6AF /* NightLightUITests */,
@@ -202,8 +202,8 @@
 		379A344F2346A9370025E6AF /* NightLight */ = {
 			isa = PBXGroup;
 			children = (
-				379A34502346A9370025E6AF /* AppDelegate.swift */,
 				379A34542346A9370025E6AF /* ViewController.swift */,
+				379A34502346A9370025E6AF /* AppDelegate.swift */,
 				379A34592346A9380025E6AF /* Assets.xcassets */,
 				379A345E2346A9380025E6AF /* Info.plist */,
 			);
@@ -292,8 +292,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				379A349623491AEB0025E6AF /* PBXTargetDependency */,
 				379A34B523491C700025E6AF /* PBXTargetDependency */,
+				379A349623491AEB0025E6AF /* PBXTargetDependency */,
 			);
 			name = NightLight;
 			productName = NightLight;
@@ -453,7 +453,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				379A345A2346A9380025E6AF /* Assets.xcassets in Resources */,
-				379A348323477B3B0025E6AF /* Default-568h@2x.png in Resources */,
+				37EA3A5B244FAA65004C97BA /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
