@@ -97,6 +97,7 @@ class ViewController: UIViewController {
             lampView.widthAnchor.constraint(equalToConstant: 60),
         ])
         
+        NSLayoutConstraint.deactivate(self.landscapeConstraints + self.portraitConstraints)
         if UIDevice.current.orientation.isLandscape {
             NSLayoutConstraint.activate(self.landscapeConstraints)
         } else {
@@ -118,6 +119,17 @@ class ViewController: UIViewController {
             let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
             i.addGestureRecognizer(tap)
         }
+    }
+
+    // enable rotation support explicitly
+    override var shouldAutorotate: Bool {
+        return true
+    }
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .allButUpsideDown
+    }
+    override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
+        return .portrait
     }
     
     // listen for device rotation
