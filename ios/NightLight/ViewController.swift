@@ -49,15 +49,9 @@ class ViewController: UIViewController {
         return v
     }()
     
-    var centerTraffic: NSLayoutConstraint!
-    var leftTraffic: NSLayoutConstraint!
-    var topTraffic: NSLayoutConstraint!
-    var CYTraffic: NSLayoutConstraint!
     
-    var lampCenter: NSLayoutConstraint!
-    var lampRight: NSLayoutConstraint!
-    var lampBottom: NSLayoutConstraint!
-    var CYlamp: NSLayoutConstraint!
+    var portraitConstraints: [NSLayoutConstraint] = []
+    var landscapeConstraints: [NSLayoutConstraint] = []
     
     override func loadView() {
         super.loadView()
@@ -76,11 +70,20 @@ class ViewController: UIViewController {
             ])
         }
         
-        self.centerTraffic = trafficBox.centerXAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerXAnchor)
-        self.leftTraffic = trafficBox.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 20)
-        self.topTraffic =  trafficBox.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 2)
-        self.CYTraffic = trafficBox.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor)
-
+        self.portraitConstraints = [
+            trafficBox.centerXAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerXAnchor), // center the traffic light horizontally
+            trafficBox.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 2), //traffic box near top
+            lampView.centerXAnchor.constraint(equalTo: trafficBox.centerXAnchor), // center the lamp horizontally
+            lampView.topAnchor.constraint(equalTo: trafficBox.bottomAnchor, constant: 80), // lamp falls below traffic light
+        ]
+        
+        self.landscapeConstraints = [
+            trafficBox.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 20), // left-align the traffic light
+            trafficBox.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor), //traffic light centered vertically
+            lampView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -20), // right-align the lamp
+            lampView.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor), // center lamp vertically
+        ]
+        
         
         let lightpad: CGFloat = 10
 
@@ -94,15 +97,10 @@ class ViewController: UIViewController {
             lampView.widthAnchor.constraint(equalToConstant: 60),
         ])
         
-        self.lampCenter = lampView.centerXAnchor.constraint(equalTo: trafficBox.centerXAnchor)
-        self.lampRight = lampView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -20)
-        self.lampBottom = lampView.topAnchor.constraint(equalTo: trafficBox.bottomAnchor, constant: 80)
-        self.CYlamp = lampView.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor)
-        
         if UIDevice.current.orientation.isLandscape {
-            NSLayoutConstraint.activate([self.leftTraffic, self.CYTraffic, self.lampRight, self.CYlamp])
+            NSLayoutConstraint.activate(self.landscapeConstraints)
         } else {
-            NSLayoutConstraint.activate([self.centerTraffic, self.topTraffic, lampCenter, self.lampBottom])
+            NSLayoutConstraint.activate(self.portraitConstraints)
         }
 
     }
@@ -126,11 +124,11 @@ class ViewController: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         if UIDevice.current.orientation.isLandscape {
-            NSLayoutConstraint.deactivate([self.centerTraffic, self.lampCenter, self.lampBottom, self.topTraffic])
-            NSLayoutConstraint.activate([self.leftTraffic, self.lampRight, self.CYlamp, self.CYTraffic])
+            NSLayoutConstraint.deactivate(self.portraitConstraints)
+            NSLayoutConstraint.activate(self.landscapeConstraints)
         } else {
-            NSLayoutConstraint.deactivate([self.leftTraffic, self.lampRight, self.CYlamp, self.CYTraffic])
-            NSLayoutConstraint.activate([self.centerTraffic, self.lampCenter, self.lampBottom, self.topTraffic])
+            NSLayoutConstraint.deactivate(self.landscapeConstraints)
+            NSLayoutConstraint.activate(self.portraitConstraints)
         }
     }
     
