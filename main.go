@@ -6,7 +6,6 @@ import (
 	"context"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
 
 	"github.com/pzl/mstk"
@@ -49,26 +48,18 @@ func main() {
 		panic(err)
 	}
 
-	var wg sync.WaitGroup
-	wg.Add(1)
 	go func() {
 		if err := sch.Start(ctx); err != nil {
 			log.WithError(err).Error("got error running scheduler")
 		}
-		wg.Done()
 	}()
 
 	// todo: advertise IP over zerconf?
 	// todo: how to accept wifi credentials when traveling
 
-	wg.Add(1)
-	go func() {
-		HTTP(ctx, l, pins, sch)
-		log.Info("HTTP service exited")
-		wg.Done()
-	}()
-
-	wg.Wait()
+	HTTP(ctx, l, pins, sch)
+	log.Info("HTTP service exited")
+	cancel()
 	log.Info("service shutdown")
 }
 
