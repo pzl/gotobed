@@ -3,3 +3,4 @@ gotobed-arm
 *.gz
 .DS_Store
 *.xcuserstate
+assets.go

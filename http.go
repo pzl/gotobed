@@ -119,11 +119,11 @@ func routes(r *chi.Mux, log *logrus.Logger, pins Pins, s *Scheduler) {
 	})
 
 	r.Get("/static/*", func(w http.ResponseWriter, r *http.Request) {
-		http.StripPrefix("/static/", http.FileServer(http.Dir("web/dist"))).ServeHTTP(w, r)
+		http.StripPrefix("/static/", http.FileServer(assets)).ServeHTTP(w, r)
 	})
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/dist/index.html")
+		http.FileServer(assets).ServeHTTP(w, r)
 	})
 }
 

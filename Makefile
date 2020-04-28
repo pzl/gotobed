@@ -1,23 +1,25 @@
 TARGET=gotobed
 PIBIN=$(TARGET)-arm
-WEB=web/dist/index.html
 
-all: $(TARGET) $(WEB)
-pi: $(PIBIN) web.tar.gz
+all: $(TARGET)
+pi: $(PIBIN)
 
-$(TARGET): $(wildcard *.go)
+$(TARGET): $(wildcard *.go) assets.go
 	go build
 
 $(PIBIN): $(wildcard *.go)
 	CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -o $(TARGET)-arm
 
-$(WEB): $(wildcard web/assets/*) $(wildcard web/components/*) $(wildcard web/layouts/*) $(wildcard web/pages/*) web/nuxt.config.js
-	cd web; npm run generate
+assets.go: assets_gen.go web/dist/index.html
+	go generate
 
-web.tar.gz: $(WEB)
-	tar -czvf web.tar.gz web/dist	
+web/dist/index.html: web/node_modules $(shell find web -type f -name '*.vue') $(shell find web -type f -name '*.js')
+	cd web && npm run build
+
+web/node_modules: web/package.json web/package-lock.json
+	cd web && npm install
 
 clean:
-	$(RM) -rf $(TARGET) $(TARGET)-arm web.tar.gz
+	$(RM) -rf $(TARGET) $(TARGET)-arm
 
 .PHONY: clean
