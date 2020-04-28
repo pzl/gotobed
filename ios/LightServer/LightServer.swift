@@ -99,6 +99,42 @@ public func LSSetState(_ state: TrafficState, _ done: @escaping (TrafficState?) 
     }
 }
 
+public func LSGetSchedule(_ done: @escaping ([TimedAction]?) -> Void) {
+    if let url = URL(string: "\(host)/schedule") {
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard error == nil else {
+                print("schedule fetch error: \(error!.localizedDescription)")
+                done(nil)
+                return
+            }
+            guard let response = response as? HTTPURLResponse else {
+                print("not HTTP response")
+                done(nil)
+                return
+            }
+            guard response.statusCode >= 200 && response.statusCode < 300 else {
+                print("bad status code: \(response.statusCode)")
+                done(nil)
+                return
+            }
+            guard let data = data else {
+                print("nil data response")
+                done(nil)
+                return
+            }
+            guard let schedule: [TimedAction] = try? JSONDecoder().decode([TimedAction].self, from: data) else {
+                print("unable to decode response")
+                if let d = String(data: data, encoding: .utf8) {
+                    print(d)
+                }
+                done(nil)
+                return
+            }
+            done(schedule)
+        }.resume()
+    }
+}
+
 public class Light: UIView {
     let onColor: UIColor
     let offColor: UIColor

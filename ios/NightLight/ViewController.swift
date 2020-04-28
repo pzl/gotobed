@@ -190,6 +190,16 @@ class ViewController: UIViewController {
     func getState(_ done: @escaping (TrafficState?) -> Void){
         print("getting state")
         self.spin()
+        
+        print("getting schedule")
+        LSGetSchedule() { schedule in
+            if let s = schedule {
+                print(s)
+            } else {
+                print("nil schedule")
+            }
+        }
+        
         LSGetState(done)
     }
     
