@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -26,11 +27,11 @@ type State struct {
 
 func setLog(s *mstk.Server) { s.Log = log }
 
-func HTTP(ctx context.Context, log *logrus.Logger, pins Pins, sch *Scheduler) {
-	s := mstk.NewServer(mstk.Addr(":8088"), setLog)
+func HTTP(ctx context.Context, log *logrus.Logger, cfg Config, sch *Scheduler) {
+	s := mstk.NewServer(mstk.Addr(":"+strconv.Itoa(cfg.Port)), setLog)
 
 	r := chi.NewRouter()
-	routes(r, log, pins, sch)
+	routes(r, log, cfg.Pins, sch)
 	s.Http.Handler = r
 
 	if err := s.Start(ctx); err != nil {

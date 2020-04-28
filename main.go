@@ -32,18 +32,18 @@ func main() {
 		cancel()
 	}()
 
-	pins, l, err := config()
+	cfg, l, err := config()
 	if err != nil {
 		panic(err)
 	}
 	log = l
 
-	if err := setupPins(pins, l); err != nil {
+	if err := setupPins(cfg.Pins, l); err != nil {
 		panic(err)
 	}
-	defer cleanupPins(pins, l)
+	defer cleanupPins(cfg.Pins, l)
 
-	sch, err := NewScheduler(pins, l)
+	sch, err := NewScheduler(cfg.Pins, l)
 	if err != nil {
 		panic(err)
 	}
@@ -57,14 +57,19 @@ func main() {
 	// todo: advertise IP over zerconf?
 	// todo: how to accept wifi credentials when traveling
 
-	HTTP(ctx, l, pins, sch)
+	HTTP(ctx, l, cfg, sch)
 	log.Info("HTTP service exited")
 	cancel()
 	log.Info("service shutdown")
 }
 
-func config() (Pins, *logrus.Logger, error) {
-	var p Pins
+type Config struct {
+	Pins
+	Port int
+}
+
+func config() (Config, *logrus.Logger, error) {
+	var c Config
 
 	conf := mstk.NewConfig("gotobed")
 	conf.Log.Debug("reading configs")
@@ -79,21 +84,23 @@ func config() (Pins, *logrus.Logger, error) {
 		p.SortFlags = false
 		p.AddFlagSet(pins)
 		p.AddFlagSet(mstk.CommonFlags())
+		p.IntP("port", "p", 8088, "HTTP listening port")
 	})
 	if err := conf.Parse(); err != nil {
-		return p, conf.Log, err
+		return c, conf.Log, err
 	}
-	if err := conf.K.Unmarshal("", &p); err != nil {
-		return p, conf.Log, err
+	if err := conf.K.Unmarshal("", &c); err != nil {
+		return c, conf.Log, err
 	}
+
 	conf.Log.WithFields(logrus.Fields{
-		"red":    p.Red,
-		"green":  p.Green,
-		"yellow": p.Yellow,
-		"lamp":   p.Lamp,
+		"red":    c.Red,
+		"green":  c.Green,
+		"yellow": c.Yellow,
+		"lamp":   c.Lamp,
 	}).Info("gpio pin numbers parsed")
 
-	return p, conf.Log, nil
+	return c, conf.Log, nil
 }
 
 func setupPins(p Pins, log *logrus.Logger) error {
