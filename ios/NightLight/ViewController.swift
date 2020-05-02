@@ -122,8 +122,6 @@ class ViewController: UIViewController {
             let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
             i.addGestureRecognizer(tap)
         }
-        self.hapSel.prepare()
-        self.hapNotif.prepare()
     }
 
     // enable rotation support explicitly
