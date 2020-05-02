@@ -53,7 +53,8 @@ class ViewController: UIViewController {
     var portraitConstraints: [NSLayoutConstraint] = []
     var landscapeConstraints: [NSLayoutConstraint] = []
 
-    lazy var hap: UINotificationFeedbackGenerator = UINotificationFeedbackGenerator()
+    lazy var hapSel = UISelectionFeedbackGenerator()
+    lazy var hapNotif = UINotificationFeedbackGenerator()
     
     override func loadView() {
         super.loadView()
@@ -121,6 +122,8 @@ class ViewController: UIViewController {
             let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
             i.addGestureRecognizer(tap)
         }
+        self.hapSel.prepare()
+        self.hapNotif.prepare()
     }
 
     // enable rotation support explicitly
@@ -208,10 +211,9 @@ class ViewController: UIViewController {
     func setState(_ state: TrafficState) {
         LSSetState(state) { s in
             if let s = s {
-                self.hap.notificationOccurred(.success)
                 self.handleState(s)
             } else {
-                self.hap.notificationOccurred(.error)
+                self.hapNotif.notificationOccurred(.error)
             }
         }
     }
@@ -235,7 +237,7 @@ class ViewController: UIViewController {
             return
         }
         
-        self.hap.prepare()
+        self.hapSel.selectionChanged()
         var state = TrafficState(redView.on, yellowView.on, greenView.on, lampView.on)
         
         switch s.view {
