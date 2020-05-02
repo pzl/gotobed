@@ -52,6 +52,8 @@ class ViewController: UIViewController {
     
     var portraitConstraints: [NSLayoutConstraint] = []
     var landscapeConstraints: [NSLayoutConstraint] = []
+
+    lazy var hap: UINotificationFeedbackGenerator = UINotificationFeedbackGenerator()
     
     override func loadView() {
         super.loadView()
@@ -206,7 +208,10 @@ class ViewController: UIViewController {
     func setState(_ state: TrafficState) {
         LSSetState(state) { s in
             if let s = s {
+                self.hap.notificationOccurred(.success)
                 self.handleState(s)
+            } else {
+                self.hap.notificationOccurred(.error)
             }
         }
     }
@@ -230,6 +235,7 @@ class ViewController: UIViewController {
             return
         }
         
+        self.hap.prepare()
         var state = TrafficState(redView.on, yellowView.on, greenView.on, lampView.on)
         
         switch s.view {
