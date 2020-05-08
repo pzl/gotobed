@@ -23,6 +23,24 @@ public struct TrafficState: Codable {
     }
 }
 
+public struct TimedAction: Codable {
+    public var id: String?
+    public var state: TrafficState
+    public var time: Int64
+    
+    public init(withState s: TrafficState, at t: Int64) {
+        state = s
+        time = t
+    }
+    
+    public init(withID i:String, withState s:TrafficState, at t: Int64) {
+        id = i
+        state = s
+        time = t
+    }
+}
+
+
 public func LSGetState(_ host: String, _ done: @escaping (TrafficState?) -> Void) {
     if let url = URL(string: "\(host)/state") {
         URLSession.shared.dataTask(with: url) { data, response, error in
