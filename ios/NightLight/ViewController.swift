@@ -83,7 +83,7 @@ class ViewController: UIViewController {
         self.landscapeConstraints = [
             trafficBox.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 20), // left-align the traffic light
             trafficBox.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor), //traffic light centered vertically
-            lampView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -20), // right-align the lamp
+            lampView.leadingAnchor.constraint(equalTo: self.trafficBox.trailingAnchor, constant: 80), // to the right of traffic
             lampView.centerYAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerYAnchor), // center lamp vertically
         ]
         
