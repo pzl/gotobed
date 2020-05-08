@@ -40,6 +40,30 @@ public struct TimedAction: Codable {
     }
 }
 
+public func LSPing(_ host: String, _ done: @escaping (Bool) -> Void) {
+    if let url = URL(string: "\(host)/ping") {
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard error == nil else {
+                print("error pinging server")
+                done(false)
+                return
+            }
+            guard let response = response as? HTTPURLResponse else {
+                print("not HTTP response at ping")
+                done(false)
+                return
+            }
+            guard response.statusCode == 200 else {
+                print("bad ping status code: \(response.statusCode)")
+                done(false)
+                return
+            }
+            done(true)
+        }
+    } else {
+        done(false)
+    }
+}
 
 public func LSGetState(_ host: String, _ done: @escaping (TrafficState?) -> Void) {
     if let url = URL(string: "\(host)/state") {
