@@ -9,6 +9,8 @@
 import UIKit
 import LightServer
 
+let hosts = ["http://stop.light", "http://192.168.1.168:8088"]
+
 class ViewController: UIViewController {
 
     lazy var trafficBox: UIView = {
@@ -146,6 +148,10 @@ class ViewController: UIViewController {
             NSLayoutConstraint.activate(self.portraitConstraints)
         }
     }
+
+    func changeHost(_ host: String) {
+        UserDefaults.standard.set(host, forKey: "host")
+    }
     
     func showFail() {
         if !self.failView.isDescendant(of: self.view){
@@ -191,11 +197,16 @@ class ViewController: UIViewController {
     }
     
     func getState(_ done: @escaping (TrafficState?) -> Void){
+        guard let host = UserDefaults.standard.string(forKey: "host") else {
+            print("no host configured")
+            return
+        }
+        
         print("getting state")
         self.spin()
         
         print("getting schedule")
-        LSGetSchedule() { schedule in
+        LSGetSchedule(host) { schedule in
             if let s = schedule {
                 print(s)
             } else {
@@ -203,11 +214,15 @@ class ViewController: UIViewController {
             }
         }
         
-        LSGetState(done)
+        LSGetState(host, done)
     }
     
     func setState(_ state: TrafficState) {
-        LSSetState(state) { s in
+        guard let host = UserDefaults.standard.string(forKey: "host") else {
+            print("no host configured")
+            return
+        }
+        LSSetState(host: host, withState: state) { s in
             if let s = s {
                 self.handleState(s)
             } else {

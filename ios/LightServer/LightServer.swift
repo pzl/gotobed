@@ -9,8 +9,6 @@
 import Foundation
 import UIKit
 
-fileprivate let host = "http://stop.light"  // "http://192.168.1.176"
-
 public struct TrafficState: Codable {
     public var red: Bool
     public var yellow: Bool
@@ -25,7 +23,7 @@ public struct TrafficState: Codable {
     }
 }
 
-public func LSGetState(_ done: @escaping (TrafficState?) -> Void) {
+public func LSGetState(_ host: String, _ done: @escaping (TrafficState?) -> Void) {
     if let url = URL(string: "\(host)/state") {
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard error == nil else {
@@ -57,7 +55,7 @@ public func LSGetState(_ done: @escaping (TrafficState?) -> Void) {
     }
 }
 
-public func LSSetState(_ state: TrafficState, _ done: @escaping (TrafficState?) -> Void) {
+public func LSSetState(host: String, withState state: TrafficState, _ done: @escaping (TrafficState?) -> Void) {
     guard let json = try? JSONEncoder().encode(state) else {
         print("error encoding JSON")
         done(nil)
@@ -99,7 +97,7 @@ public func LSSetState(_ state: TrafficState, _ done: @escaping (TrafficState?) 
     }
 }
 
-public func LSGetSchedule(_ done: @escaping ([TimedAction]?) -> Void) {
+public func LSGetSchedule(_ host: String, _ done: @escaping ([TimedAction]?) -> Void) {
     if let url = URL(string: "\(host)/schedule") {
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard error == nil else {

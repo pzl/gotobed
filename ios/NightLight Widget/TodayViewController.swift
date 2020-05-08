@@ -10,12 +10,16 @@ import UIKit
 import NotificationCenter
 import LightServer
 
+let hosts = ["http://stop.light", "http://192.168.1.168:8088"]
+
 @objc class TodayViewController: UIViewController, NCWidgetProviding {
     
     lazy var redView = CircleLight(onColor: .systemRed, offColor: .trafficRed)
     lazy var yellowView = CircleLight(onColor: .systemYellow, offColor: .trafficYellow)
     lazy var greenView = CircleLight(onColor: .green, offColor: .trafficGreen)
     lazy var lampView = Light(onColor: .systemYellow, offColor: .systemGray)
+    
+    var host = hosts[0]
     
     override func loadView() {
         self.view = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 150))
@@ -80,11 +84,11 @@ import LightServer
     }
     
     func getState(_ done: @escaping (TrafficState?) -> Void){
-        LSGetState(done)
+        LSGetState(self.host, done)
     }
     
     func setState(_ state: TrafficState) {
-        LSSetState(state) { s in
+        LSSetState(host: self.host, withState: state) { s in
             if let s = s {
                 self.handleState(s)
             }

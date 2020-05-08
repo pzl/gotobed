@@ -20,6 +20,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             shortcutAction = shortcutItem
         }
         
+        // set prefs defaults
+        UserDefaults.standard.register(defaults: [
+            "host": "http://stop.light"
+        ])
         
         window = UIWindow(frame: UIScreen.main.bounds)
     
