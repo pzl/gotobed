@@ -9,7 +9,6 @@
 import UIKit
 import LightServer
 
-let hosts = ["http://stop.light", "http://192.168.1.168:8088"]
 
 class ViewController: UIViewController {
 
@@ -64,11 +63,15 @@ class ViewController: UIViewController {
     lazy var hapSel = UISelectionFeedbackGenerator()
     lazy var hapNotif = UINotificationFeedbackGenerator()
     
+    var settings: UIViewController?
+    
     override func loadView() {
         super.loadView()
         self.view.addSubview(trafficBox)
         self.view.addSubview(lampView)
         self.setupTableView()
+        
+        self.settings = SettingsVC()
         
         lampView.layer.cornerRadius = 20
         
@@ -84,7 +87,7 @@ class ViewController: UIViewController {
         
         self.portraitConstraints = [
             trafficBox.centerXAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerXAnchor), // center the traffic light horizontally
-            trafficBox.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 2), //traffic box near top
+            trafficBox.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 50), //traffic box near top
             lampView.centerXAnchor.constraint(equalTo: trafficBox.centerXAnchor), // center the lamp horizontally
             lampView.topAnchor.constraint(equalTo: trafficBox.bottomAnchor, constant: 80), // lamp falls below traffic light
         ]
@@ -131,6 +134,10 @@ class ViewController: UIViewController {
             let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
             i.addGestureRecognizer(tap)
         }
+        
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "\u{2699}\u{0000FE0E}", style: .plain, target: self, action: #selector(settingsTap))
+        self.navigationItem.rightBarButtonItem?.setTitleTextAttributes([NSAttributedString.Key.font: UIFont(name: "Avenir Next", size: 27)!], for: .normal)
     }
     
     func setupTableView() {
@@ -170,10 +177,8 @@ class ViewController: UIViewController {
             NSLayoutConstraint.activate(self.portraitConstraints)
         }
     }
-
-    func changeHost(_ host: String) {
-        UserDefaults.standard.set(host, forKey: "host")
-    }
+    
+    // MARK: UI fail/sping state
     
     func showFail() {
         if !self.failView.isDescendant(of: self.view){
@@ -208,6 +213,9 @@ class ViewController: UIViewController {
     func stopspin() {
         self.spinner.removeFromSuperview()
     }
+    
+    
+    // MARK: state functions
     
     func reloadState() {
         print("getting state")
@@ -262,6 +270,8 @@ class ViewController: UIViewController {
         }
     }
     
+    // MARK: interaction handlers
+    
     @objc func handleTap(_ sender: UITapGestureRecognizer? = nil) {
         guard let s = sender else {
             print("tap: nil sender")
@@ -294,6 +304,12 @@ class ViewController: UIViewController {
         }
         
         self.setState(state)
+    }
+    
+    @objc func settingsTap() {
+        // push nav
+        //self.navigationController!.present(settings!, animated: true)
+        self.navigationController?.pushViewController(settings!, animated: true)
     }
 
 }
