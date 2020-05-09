@@ -51,6 +51,12 @@ class ViewController: UIViewController {
         return v
     }()
     
+    lazy var timertable: UITableView = {
+        let t = UITableView()
+        t.translatesAutoresizingMaskIntoConstraints = false
+        return t
+    }()
+    
     
     var portraitConstraints: [NSLayoutConstraint] = []
     var landscapeConstraints: [NSLayoutConstraint] = []
@@ -62,6 +68,7 @@ class ViewController: UIViewController {
         super.loadView()
         self.view.addSubview(trafficBox)
         self.view.addSubview(lampView)
+        self.setupTableView()
         
         lampView.layer.cornerRadius = 20
         
@@ -125,6 +132,21 @@ class ViewController: UIViewController {
             i.addGestureRecognizer(tap)
         }
     }
+    
+    func setupTableView() {
+        view.addSubview(timertable)
+        
+        NSLayoutConstraint.activate([
+            timertable.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -200),
+            timertable.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
+            timertable.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
+            timertable.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor)
+        ])
+        
+        timertable.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+    }
+    
+    // MARK: rotation support
 
     // enable rotation support explicitly
     override var shouldAutorotate: Bool {
