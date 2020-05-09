@@ -140,6 +140,11 @@ class ViewController: UIViewController {
         self.navigationItem.rightBarButtonItem?.setTitleTextAttributes([NSAttributedString.Key.font: UIFont(name: "Avenir Next", size: 27)!], for: .normal)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        reloadState()
+    }
+    
     func setupTableView() {
         view.addSubview(timertable)
         
@@ -220,6 +225,9 @@ class ViewController: UIViewController {
     func reloadState() {
         print("getting state")
         self.getState { state in
+            DispatchQueue.main.async { [weak self] in
+                self?.stopspin()
+            }
             if let state = state {
                 self.handleState(state)
             }
