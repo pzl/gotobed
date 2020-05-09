@@ -18,6 +18,7 @@ class SettingsVC: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource
         t.font = UIFont.systemFont(ofSize: 16)
         t.borderStyle = .roundedRect
         t.autocorrectionType = .no
+        t.text = UserDefaults.standard.string(forKey: "host")
         return t
     }()
     
