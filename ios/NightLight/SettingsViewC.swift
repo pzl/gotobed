@@ -23,14 +23,27 @@ class SettingsVC: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource
     }()
     
     let picker = UIPickerView()
+    lazy var pickerDoneBar: UIToolbar = {
+        let t = UIToolbar()
+        t.barStyle = .default
+        t.isTranslucent = true
+        let done = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.hostPickerDone))
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let cancel = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.hostPickerCancel))
+        t.setItems([cancel, space, done], animated: false)
+        t.isUserInteractionEnabled = true
+        return t
+    }()
     let dataSource: [String] = ["http://stop.light", "http://192.168.1.168:8088"]
 
     override func loadView() {
         super.loadView()
         
         hostField.inputView = picker
-        hostField.delegate = self
+        hostField.inputAccessoryView = pickerDoneBar
+        //hostField.delegate = self
         view.addSubview(hostField)
+        pickerDoneBar.sizeToFit()
         
         NSLayoutConstraint.activate([
             hostField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
@@ -72,10 +85,17 @@ class SettingsVC: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int { return dataSource.count }
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? { return dataSource[row] }
     
-    // selection callback
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        hostField.text = dataSource[row]
+    // selection callbacks
+    @objc func hostPickerDone(){
+        let row = self.picker.selectedRow(inComponent: 0)
+        self.picker.selectRow(row, inComponent: 0, animated: false)
+        self.hostField.text = dataSource[row]
+        self.hostField.resignFirstResponder()
         changeHost(dataSource[row])
+    }
+    @objc func hostPickerCancel() {
+        //@todo: select row of current host value
+        self.hostField.resignFirstResponder()
     }
     
     
