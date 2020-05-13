@@ -227,9 +227,14 @@ class ViewController: UIViewController {
         self.getState { state in
             DispatchQueue.main.async { [weak self] in
                 self?.stopspin()
+                self?.hideFail()
             }
             if let state = state {
                 self.handleState(state)
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.showFail()
+                }
             }
         }
     }
@@ -248,6 +253,9 @@ class ViewController: UIViewController {
             if let s = schedule {
                 print(s)
             } else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.showFail()
+                }
                 print("nil schedule")
             }
         }
