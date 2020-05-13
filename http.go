@@ -95,11 +95,11 @@ func routes(r *chi.Mux, log *logrus.Logger, pins Pins, s *Scheduler) {
 	r.Get("/schedule", fetchSchedule)
 	r.Post("/schedule", func(w http.ResponseWriter, r *http.Request) {
 		var req Action
-		req.ID = randID()
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			writeErr(w, r, err, "decoding request failed", logrus.Fields{})
 			return
 		}
+		req.ID = randID()
 		log := logger.GetLog(r)
 		log.WithField("req", req).Debug("schedule set request")
 		if err := s.Add(req); err != nil {
