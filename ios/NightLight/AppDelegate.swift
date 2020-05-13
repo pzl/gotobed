@@ -14,13 +14,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var vc: ViewController?
     var shortcutAction: UIApplicationShortcutItem?
     var navigationController: UINavigationController?
-
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         if let shortcutItem = launchOptions?[UIApplication.LaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
             shortcutAction = shortcutItem
         }
-
+        
         // set prefs defaults
         UserDefaults.standard.register(defaults: [
             "host": "http://stop.light"
@@ -34,11 +34,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             navigationController = UINavigationController(rootViewController: vc!)
             w.rootViewController = navigationController
             w.makeKeyAndVisible()
-
+            
         } else {
             print("not window?")
         }
-    
+        
         return true
     }
     
@@ -61,7 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     case "Lamp": state.lamp = !state.lamp
                     default: print("unknown action: \(action.type)")
                     }
-                
+                    
                     // Reset the shorcut item so it's never processed twice.
                     self?.shortcutAction = nil
                 }
@@ -75,6 +75,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
-
+    
 }
 

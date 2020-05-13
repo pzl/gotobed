@@ -192,7 +192,7 @@ public class Light: UIView {
             }
         }
     }
-
+    
     required init?(coder: NSCoder) {
         onColor = .black
         offColor = .black

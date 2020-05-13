@@ -11,7 +11,7 @@ import LightServer
 
 
 class ViewController: UIViewController {
-
+    
     lazy var trafficBox: UIView = {
         let t = UIView(frame: .zero)
         t.translatesAutoresizingMaskIntoConstraints = false
@@ -57,9 +57,10 @@ class ViewController: UIViewController {
     }()
     
     
+    
     var portraitConstraints: [NSLayoutConstraint] = []
     var landscapeConstraints: [NSLayoutConstraint] = []
-
+    
     lazy var hapSel = UISelectionFeedbackGenerator()
     lazy var hapNotif = UINotificationFeedbackGenerator()
     
@@ -101,7 +102,7 @@ class ViewController: UIViewController {
         
         
         let lightpad: CGFloat = 10
-
+        
         NSLayoutConstraint.activate([
             trafficBox.widthAnchor.constraint(equalToConstant: 80),
             trafficBox.heightAnchor.constraint(equalToConstant: 200),
@@ -118,7 +119,7 @@ class ViewController: UIViewController {
         } else {
             NSLayoutConstraint.activate(self.portraitConstraints)
         }
-
+        
     }
     
     override func viewDidLoad() {
@@ -159,7 +160,7 @@ class ViewController: UIViewController {
     }
     
     // MARK: rotation support
-
+    
     // enable rotation support explicitly
     override var shouldAutorotate: Bool {
         return true

@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 class SettingsVC: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
-
+    
     lazy var hostField: UITextField = {
         let t = UITextField(frame: .zero)
         t.translatesAutoresizingMaskIntoConstraints = false
@@ -36,7 +36,7 @@ class SettingsVC: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource
         return t
     }()
     let dataSource: [String] = ["http://stop.light", "http://192.168.1.168:8088"]
-
+    
     override func loadView() {
         super.loadView()
         
@@ -54,16 +54,16 @@ class SettingsVC: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource
         ])
         
         /*
-        self.view.addSubview(picker)
-        picker.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            picker.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            picker.heightAnchor.constraint(equalToConstant: 200),
-            picker.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
-            picker.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor)
-        ])
-        */
+         self.view.addSubview(picker)
+         picker.translatesAutoresizingMaskIntoConstraints = false
+         
+         NSLayoutConstraint.activate([
+         picker.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 20),
+         picker.heightAnchor.constraint(equalToConstant: 200),
+         picker.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
+         picker.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor)
+         ])
+         */
         picker.delegate = self as UIPickerViewDelegate
         picker.dataSource = self as UIPickerViewDataSource
         
