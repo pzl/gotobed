@@ -145,7 +145,7 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        reloadState()
+        reloadData()
     }
     
     func setupTableView() {
@@ -224,7 +224,8 @@ class ViewController: UIViewController {
     
     // MARK: state functions
     
-    func reloadState() {
+    func reloadData() {
+        self.spin()
         print("getting state")
         self.getState { state in
             DispatchQueue.main.async { [weak self] in
@@ -239,30 +240,14 @@ class ViewController: UIViewController {
                 }
             }
         }
-    }
-    
-    func getState(_ done: @escaping (TrafficState?) -> Void){
-        guard let host = UserDefaults.standard.string(forKey: "host") else {
-            print("no host configured")
-            return
-        }
-        
-        print("getting state")
-        self.spin()
-        
         print("getting schedule")
-        LSGetSchedule(host) { schedule in
+        self.getSchedule { schedule in
+            DispatchQueue.main.async { [weak self] in
+                self?.stopspin()
+                self?.hideFail()
+            }
             if let s = schedule {
-                self.timers = s
-                DispatchQueue.main.async { [weak self] in
-                    self?.timertable.reloadData()
-                    if self?.timers.count == 0 {
-                        self?.timertable.isHidden = true
-                    } else {
-                        self?.timertable.isHidden = false
-                    }
-                }
-                print(s)
+                self.handleSchedule(s)
             } else {
                 DispatchQueue.main.async { [weak self] in
                     self?.showFail()
@@ -270,7 +255,23 @@ class ViewController: UIViewController {
                 print("nil schedule")
             }
         }
-        
+    }
+    
+    func getSchedule(_ done: @escaping ([TimedAction]?) -> Void) {
+        guard let host = UserDefaults.standard.string(forKey: "host") else {
+            print("no host configured")
+            return
+        }
+        print("getting schedule")
+        LSGetSchedule(host, done)
+    }
+    
+    func getState(_ done: @escaping (TrafficState?) -> Void){
+        guard let host = UserDefaults.standard.string(forKey: "host") else {
+            print("no host configured")
+            return
+        }
+        print("getting state")
         LSGetState(host, done)
     }
     
@@ -294,6 +295,18 @@ class ViewController: UIViewController {
             self.yellowView.on = state.yellow
             self.greenView.on = state.green
             self.lampView.on = state.lamp
+        }
+    }
+    
+    func handleSchedule(_ schedule: [TimedAction]) {
+        self.timers = schedule
+        DispatchQueue.main.async { [weak self] in
+            self?.timertable.reloadData()
+            if self?.timers.count == 0 {
+                self?.timertable.isHidden = true
+            } else {
+                self?.timertable.isHidden = false
+            }
         }
     }
     
