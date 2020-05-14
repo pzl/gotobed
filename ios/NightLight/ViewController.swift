@@ -66,6 +66,8 @@ class ViewController: UIViewController {
     
     var settings: UIViewController?
     
+    var timers: [TimedAction] = []
+        
     override func loadView() {
         super.loadView()
         self.view.addSubview(trafficBox)
@@ -135,7 +137,7 @@ class ViewController: UIViewController {
             let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
             i.addGestureRecognizer(tap)
         }
-        
+        self.timertable.dataSource = self
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "\u{2699}\u{0000FE0E}", style: .plain, target: self, action: #selector(settingsTap))
         self.navigationItem.rightBarButtonItem?.setTitleTextAttributes([NSAttributedString.Key.font: UIFont(name: "Avenir Next", size: 27)!], for: .normal)
@@ -220,7 +222,6 @@ class ViewController: UIViewController {
         self.spinner.removeFromSuperview()
     }
     
-    
     // MARK: state functions
     
     func reloadState() {
@@ -252,6 +253,15 @@ class ViewController: UIViewController {
         print("getting schedule")
         LSGetSchedule(host) { schedule in
             if let s = schedule {
+                self.timers = s
+                DispatchQueue.main.async { [weak self] in
+                    self?.timertable.reloadData()
+                    if self?.timers.count == 0 {
+                        self?.timertable.isHidden = true
+                    } else {
+                        self?.timertable.isHidden = false
+                    }
+                }
                 print(s)
             } else {
                 DispatchQueue.main.async { [weak self] in
@@ -328,7 +338,19 @@ class ViewController: UIViewController {
         //self.navigationController!.present(settings!, animated: true)
         self.navigationController?.pushViewController(settings!, animated: true)
     }
-
+    
 }
 
-
+// timer table stuff
+extension ViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.timers.count
+    }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let t = self.timers[indexPath.row]
+        // set cell properties here based on t
+        cell.textLabel?.text = t.id
+        return cell
+    }
+}
