@@ -138,6 +138,7 @@ class ViewController: UIViewController {
             i.addGestureRecognizer(tap)
         }
         self.timertable.dataSource = self
+        self.timertable.delegate = self
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "\u{2699}\u{0000FE0E}", style: .plain, target: self, action: #selector(settingsTap))
         self.navigationItem.rightBarButtonItem?.setTitleTextAttributes([NSAttributedString.Key.font: UIFont(name: "Avenir Next", size: 27)!], for: .normal)
@@ -375,5 +376,29 @@ extension ViewController: UITableViewDataSource {
         df.timeZone = .current
         tcell.timeLabel.text = df.string(from: date)
         return cell
+    }
+}
+
+// timer table actions
+extension ViewController: UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+
+        let delete = UIContextualAction(style: .destructive, title: "Remove") { (action, view, completionHandler) in
+
+            // if API deletion success:
+            self.timers.remove(at: indexPath.row)
+            self.timertable.deleteRows(at: [indexPath], with: .automatic)
+            completionHandler(true)
+        }
+
+        return UISwipeActionsConfiguration(actions: [delete])
+    }
+    
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let edit = UIContextualAction(style: .normal, title: "Edit") { (action, view, completion) in
+            completion(true)
+        }
+        return UISwipeActionsConfiguration(actions: [edit])
     }
 }
