@@ -158,7 +158,7 @@ class ViewController: UIViewController {
             timertable.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor)
         ])
         
-        timertable.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        timertable.register(TimerCell.self, forCellReuseIdentifier: "cell")
     }
     
     // MARK: rotation support
@@ -363,7 +363,17 @@ extension ViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         let t = self.timers[indexPath.row]
         // set cell properties here based on t
-        cell.textLabel?.text = t.id
+    
+        guard let tcell = cell as? TimerCell else {
+            return cell // send up a default cell
+        }
+       
+        let date = Date(timeIntervalSince1970: Double(t.time))
+        let df = DateFormatter()
+        df.timeStyle = .medium
+        df.dateStyle = .medium
+        df.timeZone = .current
+        tcell.timeLabel.text = df.string(from: date)
         return cell
     }
 }
