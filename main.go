@@ -69,7 +69,13 @@ type Config struct {
 }
 
 func config() (Config, *logrus.Logger, error) {
-	var c Config
+	var c struct {
+		Red    int
+		Green  int
+		Yellow int
+		Lamp   int
+		Port   int
+	}
 
 	conf := mstk.NewConfig("gotobed")
 	conf.Log.Debug("reading configs")
@@ -87,11 +93,13 @@ func config() (Config, *logrus.Logger, error) {
 		p.IntP("port", "p", 8088, "HTTP listening port")
 	})
 	if err := conf.Parse(); err != nil {
-		return c, conf.Log, err
+		return Config{}, conf.Log, err
 	}
 	if err := conf.K.Unmarshal("", &c); err != nil {
-		return c, conf.Log, err
+		return Config{}, conf.Log, err
 	}
+
+	conf.Log.WithField("config", c).Info("parsed")
 
 	conf.Log.WithFields(logrus.Fields{
 		"red":    c.Red,
@@ -100,7 +108,17 @@ func config() (Config, *logrus.Logger, error) {
 		"lamp":   c.Lamp,
 	}).Info("gpio pin numbers parsed")
 
-	return c, conf.Log, nil
+	cfg := Config{
+		Pins: Pins{
+			Red:    c.Red,
+			Yellow: c.Yellow,
+			Green:  c.Green,
+			Lamp:   c.Lamp,
+		},
+		Port: c.Port,
+	}
+
+	return cfg, conf.Log, nil
 }
 
 func setupPins(p Pins, log *logrus.Logger) error {
