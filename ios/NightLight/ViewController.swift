@@ -139,6 +139,7 @@ class ViewController: UIViewController {
         }
         self.timertable.dataSource = self
         self.timertable.delegate = self
+        self.timertable.allowsSelection = false
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "\u{2699}\u{0000FE0E}", style: .plain, target: self, action: #selector(settingsTap))
         self.navigationItem.rightBarButtonItem?.setTitleTextAttributes([NSAttributedString.Key.font: UIFont(name: "Avenir Next", size: 27)!], for: .normal)
