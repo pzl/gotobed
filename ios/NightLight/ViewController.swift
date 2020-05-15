@@ -378,11 +378,11 @@ extension ViewController: UITableViewDataSource {
         tcell.timeLabel.text = df.string(from: date)
         
         if t.state.red {
-            tcell.stateLabel.text = "R"
+            tcell.stateView.backgroundColor = .systemRed
         } else if t.state.yellow {
-            tcell.stateLabel.text = "Y"
+            tcell.stateView.backgroundColor = .systemYellow
         } else if t.state.green {
-            tcell.stateLabel.text = "G"
+            tcell.stateView.backgroundColor = .systemGreen
         }
         return cell
     }
