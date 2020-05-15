@@ -15,7 +15,7 @@ extension UIColor {
         if #available(iOS 13, *) {
             return UIColor(dynamicProvider: {(traitCollection: UITraitCollection) -> UIColor in
                 if traitCollection.userInterfaceStyle == .dark {
-                    return UIColor(red: 0.25, green: 0.25, blue: 0.25, alpha: 1)
+                    return UIColor(red: 0.25, green: 0.25, blue: 0.25, alpha: 0.1)
                 }
                 return base
             })
@@ -28,7 +28,7 @@ extension UIColor {
         if #available(iOS 13, *) {
             return UIColor(dynamicProvider: {(traitCollection: UITraitCollection) -> UIColor in
                 if traitCollection.userInterfaceStyle == .dark {
-                    return UIColor(red: 0.5, green: 0, blue: 0, alpha: 1)
+                    return UIColor(red: 0.5, green: 0, blue: 0, alpha: 0.1)
                 }
                 return base
             })
@@ -41,7 +41,7 @@ extension UIColor {
         if #available(iOS 13, *) {
             return UIColor(dynamicProvider: {(traitCollection: UITraitCollection) -> UIColor in
                 if traitCollection.userInterfaceStyle == .dark {
-                    return UIColor(red: 0.5, green: 0.5, blue: 0, alpha: 1)
+                    return UIColor(red: 0.5, green: 0.5, blue: 0, alpha: 0.1)
                 }
                 return base
             })

@@ -222,8 +222,10 @@ public class Light: UIView {
                 layer.shadowRadius = 20
                 layer.shadowOpacity = 1
                 layer.shadowPath = UIBezierPath(rect: self.bounds).cgPath
+                alpha = 1
             } else {
                 layer.shadowOpacity = 0
+                alpha = 0.25
             }
         }
     }
