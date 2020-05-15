@@ -380,7 +380,7 @@ extension ViewController: UITableViewDataSource {
     }
 }
 
-// timer table actions
+// MARK: - timer table actions
 extension ViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -398,7 +398,10 @@ extension ViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let edit = UIContextualAction(style: .normal, title: "Edit") { (action, view, completion) in
+            let timer = self.timers[indexPath.row]
+            let editVC = TimerEditVC(timer: timer)
             completion(true)
+            self.present(editVC, animated: true)
         }
         return UISwipeActionsConfiguration(actions: [edit])
     }
