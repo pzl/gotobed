@@ -175,6 +175,41 @@ public func LSGetSchedule(_ host: String, _ done: @escaping ([TimedAction]?) -> 
     }
 }
 
+public func LSDeleteSchedule(_ host: String, id: String, _ done: @escaping([TimedAction]?) -> Void) {
+    if let url = URL(string: "\(host)/schedule/\(id)") {
+        var req = URLRequest(url: url)
+        req.httpMethod = "DELETE"
+        URLSession.shared.dataTask(with: req) { data, response, error in
+            guard error == nil else {
+                print("initial error: \(error!.localizedDescription)")
+                done(nil)
+                return
+            }
+            guard let response = response as? HTTPURLResponse else {
+                print("not HTTP response")
+                done(nil)
+                return
+            }
+            guard response.statusCode >= 200 && response.statusCode < 300 else {
+                print("bad status code: \(response.statusCode)")
+                done(nil)
+                return
+            }
+            guard let data = data else {
+                print("got nil response after sending")
+                done(nil)
+                return
+            }
+            guard let sched = try? JSONDecoder().decode([TimedAction].self, from: data) else {
+                print("unable to decode response")
+                done(nil)
+                return
+            }
+            done(sched)
+        }.resume()
+    }
+}
+
 public class Light: UIView {
     let onColor: UIColor
     let offColor: UIColor

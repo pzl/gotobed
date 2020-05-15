@@ -208,8 +208,8 @@
 		379A344F2346A9370025E6AF /* NightLight */ = {
 			isa = PBXGroup;
 			children = (
-				379A34542346A9370025E6AF /* ViewController.swift */,
 				37C34F4D246E0B2500ABDF07 /* TimerEditVC.swift */,
+				379A34542346A9370025E6AF /* ViewController.swift */,
 				37C34F4B246CE1F200ABDF07 /* TimerCell.swift */,
 				37D13A3824660CB700C940AC /* SettingsViewC.swift */,
 				379A34502346A9370025E6AF /* AppDelegate.swift */,

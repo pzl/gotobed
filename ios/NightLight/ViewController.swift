@@ -394,11 +394,32 @@ extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
 
         let delete = UIContextualAction(style: .destructive, title: "Remove") { (action, view, completionHandler) in
-
-            // if API deletion success:
-            self.timers.remove(at: indexPath.row)
-            self.timertable.deleteRows(at: [indexPath], with: .automatic)
-            completionHandler(true)
+            guard let host = UserDefaults.standard.string(forKey: "host") else {
+                print("no host configured")
+                completionHandler(false)
+                return
+            }
+            let timer = self.timers[indexPath.row]
+            guard let id = timer.id else {
+                print("no id to delete")
+                completionHandler(false)
+                return
+            }
+            LSDeleteSchedule(host, id: id) { schedule in
+                if schedule == nil {
+                    print("nil state returned after delete")
+                    DispatchQueue.main.async {
+                        completionHandler(false)
+                    }
+                    return
+                }
+                // if API deletion success:
+                DispatchQueue.main.async {
+                    self.timers.remove(at: indexPath.row)
+                    self.timertable.deleteRows(at: [indexPath], with: .automatic)
+                    completionHandler(true)
+                }
+            }
         }
 
         return UISwipeActionsConfiguration(actions: [delete])
