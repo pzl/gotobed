@@ -13,6 +13,8 @@ class TimerCell: UITableViewCell {
     var safeMargins: UILayoutGuide!
     let timeLabel = UILabel()
     
+    let stateLabel = UILabel()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupView()
@@ -26,6 +28,7 @@ class TimerCell: UITableViewCell {
         safeMargins = layoutMarginsGuide
         
         //add subviews, setup constraints
+        setupStateLabel()
         setupTimeLabel()
     }
     
@@ -34,8 +37,18 @@ class TimerCell: UITableViewCell {
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            timeLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5),
-            timeLabel.leadingAnchor.constraint(equalTo: safeMargins.leadingAnchor),
+            timeLabel.topAnchor.constraint(equalTo: stateLabel.topAnchor),
+            timeLabel.leadingAnchor.constraint(equalTo: stateLabel.trailingAnchor, constant: 10),
+        ])
+    }
+    
+    func setupStateLabel() {
+        addSubview(stateLabel)
+        stateLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            stateLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5),
+            stateLabel.leadingAnchor.constraint(equalTo: safeMargins.leadingAnchor),
         ])
     }
 }

@@ -376,6 +376,14 @@ extension ViewController: UITableViewDataSource {
         df.dateStyle = .medium
         df.timeZone = .current
         tcell.timeLabel.text = df.string(from: date)
+        
+        if t.state.red {
+            tcell.stateLabel.text = "R"
+        } else if t.state.yellow {
+            tcell.stateLabel.text = "Y"
+        } else if t.state.green {
+            tcell.stateLabel.text = "G"
+        }
         return cell
     }
 }
