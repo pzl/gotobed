@@ -53,6 +53,7 @@ class ViewController: UIViewController {
     lazy var timertable: UITableView = {
         let t = UITableView()
         t.translatesAutoresizingMaskIntoConstraints = false
+        t.tableFooterView = UIView(frame: .zero)
         return t
     }()
     
@@ -304,11 +305,6 @@ class ViewController: UIViewController {
         self.timers = schedule
         DispatchQueue.main.async { [weak self] in
             self?.timertable.reloadData()
-            if self?.timers.count == 0 {
-                self?.timertable.isHidden = true
-            } else {
-                self?.timertable.isHidden = false
-            }
         }
     }
     
