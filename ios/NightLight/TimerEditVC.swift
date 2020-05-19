@@ -126,7 +126,7 @@ class TimerEditVC: UIViewController {
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.navCancel))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(self.complete))
-        
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
         
         let tappables: [Light] = [Red, Yellow, Green, Lamp]
         for i in tappables {
@@ -184,6 +184,7 @@ class TimerEditVC: UIViewController {
     
     @objc func datePickerChanged() {
         print("on change")
+        self.navigationItem.rightBarButtonItem?.isEnabled = true
         timeField.text = fmt.string(from: datePicker.date)
     }
     
@@ -197,6 +198,7 @@ class TimerEditVC: UIViewController {
             return
         }
         
+        self.navigationItem.rightBarButtonItem?.isEnabled = true
         switch s.view {
         case Red:
             Red.on = true
