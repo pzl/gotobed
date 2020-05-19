@@ -13,6 +13,11 @@ import LightServer
 class TimerEditVC: UIViewController {
     let timer: TimedAction
     let isNew: Bool
+    var hasEdited: Bool = false {
+        didSet {
+            navigationItem.rightBarButtonItem?.isEnabled = true
+        }
+    }
     var onAccept: ((TimedAction) -> Void)?
     
     let idLabel: UILabel = {
@@ -188,7 +193,7 @@ class TimerEditVC: UIViewController {
     
     @objc func datePickerChanged() {
         print("on change")
-        self.navigationItem.rightBarButtonItem?.isEnabled = true
+        self.hasEdited = true
         timeField.text = fmt.string(from: datePicker.date)
     }
     
@@ -202,7 +207,7 @@ class TimerEditVC: UIViewController {
             return
         }
         
-        self.navigationItem.rightBarButtonItem?.isEnabled = true
+        self.hasEdited = true
         switch s.view {
         case Red:
             Red.on = true
