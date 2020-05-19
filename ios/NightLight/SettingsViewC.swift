@@ -25,7 +25,7 @@ class SettingsVC: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource
     
     let picker = UIPickerView()
     lazy var pickerDoneBar: UIToolbar = {
-        let t = UIToolbar()
+        let t = UIToolbar(frame: CGRect(x: 0, y: 0, width: 100, height: 10))
         t.barStyle = .default
         t.isTranslucent = true
         let done = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.hostPickerDone))
