@@ -12,6 +12,7 @@ import LightServer
 
 class TimerEditVC: UIViewController {
     let timer: TimedAction
+    let isNew: Bool
     var onAccept: ((TimedAction) -> Void)?
     
     let idLabel: UILabel = {
@@ -64,6 +65,7 @@ class TimerEditVC: UIViewController {
     init(timer: TimedAction) {
         self.timer = timer
         self.lastTime = Date(timeIntervalSince1970: Double(timer.time))
+        self.isNew = timer.id == nil
         super.init(nibName: nil, bundle: nil)
     }
     convenience init(timer: TimedAction, onAccept: @escaping (TimedAction) -> Void) {
@@ -124,8 +126,10 @@ class TimerEditVC: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = .systemBackground
         
+        let confirmString = isNew ? "Create" : "Save"
+        
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.navCancel))
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(self.complete))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: confirmString, style: .done, target: self, action: #selector(self.complete))
         self.navigationItem.rightBarButtonItem?.isEnabled = false
         
         let tappables: [Light] = [Red, Yellow, Green, Lamp]
