@@ -118,6 +118,29 @@ func routes(r *chi.Mux, log *logrus.Logger, pins Pins, s *Scheduler) {
 		fetchSchedule(w, r)
 		return
 	})
+	r.Post("/schedule/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+		var req Action
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			writeErr(w, r, err, "decoding request failed", logrus.Fields{})
+			return
+		}
+		req.ID = id
+		log := logger.GetLog(r)
+		log.WithField("req", req).Debug("deleting timer, before recreating with update")
+		if err := s.Delete(id); err != nil {
+			writeErr(w, r, err, "delete step of updating action", logrus.Fields{})
+			return
+		}
+		log.Debug("deleted. Recreating")
+		if err := s.Add(req); err != nil {
+			writeErr(w, r, err, "err recreating timer for update", logrus.Fields{})
+			return
+		}
+		fetchSchedule(w, r)
+		return
+
+	})
 
 	r.Get("/static/*", func(w http.ResponseWriter, r *http.Request) {
 		http.StripPrefix("/static/", http.FileServer(assets)).ServeHTTP(w, r)
