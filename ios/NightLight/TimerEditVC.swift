@@ -84,7 +84,9 @@ class TimerEditVC: UIViewController {
     
     override func loadView() {
         super.loadView()
-
+        
+        self.isModalInPresentation = true
+        navigationController?.presentationController?.delegate = self
         
         view.addSubview(timeField)
         view.addSubview(idLabel)
@@ -163,6 +165,7 @@ class TimerEditVC: UIViewController {
         self.timeField.becomeFirstResponder()
     }
     
+    // MARK: - sheet action responders
     @objc func navCancel() {
         self.dismiss(animated: true)
     }
@@ -178,6 +181,7 @@ class TimerEditVC: UIViewController {
         self.dismiss(animated: true)
     }
     
+    // MARK: - Date Picker responders
     @objc func datePickerDone() {
         print("picker done")
         lastTime = datePicker.date
@@ -197,6 +201,7 @@ class TimerEditVC: UIViewController {
         timeField.text = fmt.string(from: datePicker.date)
     }
     
+    // MARK: - light tap responder
     @objc func stateTapped(_ sender: UITapGestureRecognizer? = nil) {
         guard let s = sender else {
             print("nil tap")
@@ -226,4 +231,30 @@ class TimerEditVC: UIViewController {
             print("unknown view tapped: \(s.view!)")
         }
     }
+}
+
+extension TimerEditVC: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidAttemptToDismiss(_ presentationController: UIPresentationController) {
+        print("dismiss attempt")
+        timeField.resignFirstResponder()
+        if !self.hasEdited {
+            self.dismiss(animated: true, completion: nil)
+            return
+        }
+        
+        let a = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let confirmString = self.isNew ? "Create" : "Save"
+        
+        a.addAction(UIAlertAction(title: confirmString, style: .default, handler: { action in
+            self.complete()
+        }))
+        a.addAction(UIAlertAction(title: "Discard Changes", style: .destructive, handler: { action in
+            self.dismiss(animated: true)
+        }))
+        a.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+            
+        }))
+        self.present(a, animated: true)
+    }
+    
 }
