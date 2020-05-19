@@ -57,6 +57,28 @@ class ViewController: UIViewController {
         return t
     }()
     
+    lazy var addTimerView: AddTimerView = {
+        let v = AddTimerView(self.addTimerTap)
+        v.frame.size.height = 50
+        v.highlightColor = .systemGreen
+        v.offColor = .systemBackground
+        return v
+    }()
+    
+    lazy var addTimerButton: UIImageView = {
+        let b = UIImageView(image: .add)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        b.backgroundColor = .systemGreen
+        b.layer.cornerRadius = 100
+        return b
+    }()
+    
+    lazy var addTimerLabel: UILabel = {
+        let l = UILabel(frame: .zero)
+        l.translatesAutoresizingMaskIntoConstraints = false
+        l.text = "Add Timer"
+        return l
+    }()
     
     
     var portraitConstraints: [NSLayoutConstraint] = []
@@ -71,6 +93,9 @@ class ViewController: UIViewController {
         
     override func loadView() {
         super.loadView()
+        
+        self.addTimerView.addSubview(addTimerButton)
+        
         self.view.addSubview(trafficBox)
         self.view.addSubview(lampView)
         self.setupTableView()
@@ -142,6 +167,7 @@ class ViewController: UIViewController {
         self.timertable.delegate = self
         self.timertable.allowsSelection = false
         
+        
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "\u{2699}\u{0000FE0E}", style: .plain, target: self, action: #selector(settingsTap))
         self.navigationItem.rightBarButtonItem?.setTitleTextAttributes([NSAttributedString.Key.font: UIFont(name: "Avenir Next", size: 27)!], for: .normal)
     }
@@ -152,13 +178,23 @@ class ViewController: UIViewController {
     }
     
     func setupTableView() {
+        addTimerView.addSubview(addTimerButton)
+        addTimerView.addSubview(addTimerLabel)
         view.addSubview(timertable)
+        
+        timertable.tableFooterView = addTimerView
         
         NSLayoutConstraint.activate([
             timertable.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -200),
             timertable.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
             timertable.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
-            timertable.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor)
+            timertable.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
+            addTimerButton.leadingAnchor.constraint(equalTo: addTimerView.leadingAnchor, constant: 20),
+            addTimerButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 20),
+            addTimerButton.heightAnchor.constraint(equalTo: addTimerButton.widthAnchor),
+            addTimerButton.centerYAnchor.constraint(equalTo: addTimerView.centerYAnchor),
+            addTimerLabel.centerYAnchor.constraint(equalTo: addTimerButton.centerYAnchor),
+            addTimerLabel.leadingAnchor.constraint(equalTo: addTimerButton.trailingAnchor, constant: 12),
         ])
         
         timertable.register(TimerCell.self, forCellReuseIdentifier: "cell")
@@ -198,7 +234,6 @@ class ViewController: UIViewController {
             let iv = UIImageView(image: ic)
             self.failView.addSubview(iv)
             self.view.addSubview(self.failView)
-            //self.failView.center = self.view.center // if not using constraints
             NSLayoutConstraint.activate([
                 self.failView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
                 self.failView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
@@ -350,6 +385,41 @@ class ViewController: UIViewController {
         self.navigationController?.pushViewController(settings!, animated: true)
     }
     
+    @objc func addTimerTap() {
+        print("adding Timer")
+        let now = Date().timeIntervalSince1970
+        let newTimer = TimedAction(withState: TrafficState(false, false, false, false), at: Int64(now))
+        let editVC = TimerEditVC(timer: newTimer, onAccept: { setTimer in
+            guard let host = UserDefaults.standard.string(forKey: "host") else {
+                print("no host configured")
+                DispatchQueue.main.async {
+                    let ac = UIAlertController(title: "Error", message: "unable to create timer, no Host configured", preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(ac, animated: true)
+                }
+                return
+            }
+            LSCreateScheduled(host, setTimer) { response in
+                guard let schedule = response else {
+                    print("nil response")
+                    DispatchQueue.main.async {
+                        let ac = UIAlertController(title: "Error", message: "unable to create timer", preferredStyle: .alert)
+                        ac.addAction(UIAlertAction(title: "OK", style: .default))
+                        self.present(ac, animated: true)
+                    }
+                    return
+                }
+                DispatchQueue.main.async {
+                    self.timers = schedule
+                    self.timertable.reloadData()
+                }
+            }
+        })
+        
+        let navc = UINavigationController(rootViewController: editVC)
+        present(navc, animated: true)
+    }
+    
 }
 
 // timer table stuff
@@ -392,13 +462,23 @@ extension ViewController: UITableViewDelegate {
         let delete = UIContextualAction(style: .destructive, title: "Remove") { (action, view, completionHandler) in
             guard let host = UserDefaults.standard.string(forKey: "host") else {
                 print("no host configured")
-                completionHandler(false)
+                DispatchQueue.main.async {
+                    completionHandler(false)
+                    let ac = UIAlertController(title: "Error", message: "unable to Delete timer, no Host set", preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(ac, animated: true)
+                }
                 return
             }
             let timer = self.timers[indexPath.row]
             guard let id = timer.id else {
                 print("no id to delete")
-                completionHandler(false)
+                DispatchQueue.main.async {
+                    completionHandler(false)
+                    let ac = UIAlertController(title: "Error", message: "unable to delete timer, no ID", preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(ac, animated: true)
+                }
                 return
             }
             LSDeleteSchedule(host, id: id) { schedule in
@@ -406,6 +486,9 @@ extension ViewController: UITableViewDelegate {
                     print("nil state returned after delete")
                     DispatchQueue.main.async {
                         completionHandler(false)
+                        let ac = UIAlertController(title: "Error", message: "unable to delete timer", preferredStyle: .alert)
+                        ac.addAction(UIAlertAction(title: "OK", style: .default))
+                        self.present(ac, animated: true)
                     }
                     return
                 }
@@ -424,10 +507,70 @@ extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let edit = UIContextualAction(style: .normal, title: "Edit") { (action, view, completion) in
             let timer = self.timers[indexPath.row]
-            let editVC = TimerEditVC(timer: timer)
-            completion(true)
-            self.present(editVC, animated: true)
+            let editVC = TimerEditVC(timer: timer, onAccept: { edited in
+                guard let host = UserDefaults.standard.string(forKey: "host") else {
+                    print("no host configured")
+                    DispatchQueue.main.async {
+                        completion(false)
+                        let ac = UIAlertController(title: "Error", message: "unable to edit timer, no Host set", preferredStyle: .alert)
+                        ac.addAction(UIAlertAction(title: "OK", style: .default))
+                        self.present(ac, animated: true)
+                    }
+                    return
+                }
+                LSUpdateScheduled(host, edited) { response in
+                    guard let schedule = response else {
+                        print("nil response")
+                        DispatchQueue.main.async {
+                            completion(false)
+                            let ac = UIAlertController(title: "Error", message: "unable to edit timer", preferredStyle: .alert)
+                            ac.addAction(UIAlertAction(title: "OK", style: .default))
+                            self.present(ac, animated: true)
+                        }
+                        return
+                    }
+                    DispatchQueue.main.async {
+                        self.timers = schedule
+                        self.timertable.reloadData()
+                        completion(true)
+                    }
+                }
+            })
+            let navVC = UINavigationController(rootViewController: editVC)
+            self.present(navVC, animated: true)
         }
         return UISwipeActionsConfiguration(actions: [edit])
+    }
+}
+
+
+class AddTimerView: UIControl {
+    private var animator = UIViewPropertyAnimator()
+    let done: () -> Void
+    var offColor: UIColor = UIColor()
+    var highlightColor: UIColor = UIColor()
+    
+    init(_ withDone: @escaping () -> Void) {
+        self.done = withDone
+        super.init(frame: .zero)
+        addTarget(self, action: #selector(touchDown), for: [.touchDown, .touchDragEnter])
+        addTarget(self, action: #selector(touchUp), for: [.touchUpInside, .touchDragExit, .touchCancel])
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("coder: not implemented")
+    }
+    
+    @objc private func touchDown() {
+        animator.stopAnimation(true)
+        backgroundColor = highlightColor
+    }
+    
+    @objc private func touchUp() {
+        animator = UIViewPropertyAnimator(duration: 0.5, curve: .easeOut, animations: {
+            self.backgroundColor = self.offColor
+        })
+        animator.startAnimation()
+        done()
     }
 }

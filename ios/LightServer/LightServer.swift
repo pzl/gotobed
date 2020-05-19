@@ -210,6 +210,95 @@ public func LSDeleteSchedule(_ host: String, id: String, _ done: @escaping([Time
     }
 }
 
+public func LSCreateScheduled(_ host: String, _ timer: TimedAction, _ done: @escaping ([TimedAction]?) -> Void) {
+    guard let json = try? JSONEncoder().encode(timer) else {
+        print("error encoding JSON")
+        done(nil)
+        return
+    }
+    
+    if let url = URL(string: "\(host)/schedule") {
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.httpBody = json
+        URLSession.shared.dataTask(with: req) { data, response, error in
+            guard error == nil else {
+                print("initial error: \(error!.localizedDescription)")
+                done(nil)
+                return
+            }
+            guard let response = response as? HTTPURLResponse else {
+                print("not HTTP response")
+                done(nil)
+                return
+            }
+            guard response.statusCode >= 200 && response.statusCode < 300 else {
+                print("bad status code: \(response.statusCode)")
+                done(nil)
+                return
+            }
+            guard let data = data else {
+                print("got nil response after sending")
+                done(nil)
+                return
+            }
+            guard let resp = try? JSONDecoder().decode([TimedAction].self, from: data) else {
+                print("unable to decode response")
+                done(nil)
+                return
+            }
+            done(resp)
+        }.resume()
+    }
+}
+
+public func LSUpdateScheduled(_ host: String, _ timer: TimedAction, _ done: @escaping ([TimedAction]?) -> Void) {
+    guard let json = try? JSONEncoder().encode(timer) else {
+        print("error encoding JSON")
+        done(nil)
+        return
+    }
+    guard timer.id != nil else {
+        print("timer missing ID")
+        done(nil)
+        return
+    }
+    
+    if let url = URL(string: "\(host)/schedule/\(timer.id!)") {
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.httpBody = json
+        URLSession.shared.dataTask(with: req) { data, response, error in
+            guard error == nil else {
+                print("initial error: \(error!.localizedDescription)")
+                done(nil)
+                return
+            }
+            guard let response = response as? HTTPURLResponse else {
+                print("not HTTP response")
+                done(nil)
+                return
+            }
+            guard response.statusCode >= 200 && response.statusCode < 300 else {
+                print("bad status code: \(response.statusCode)")
+                done(nil)
+                return
+            }
+            guard let data = data else {
+                print("got nil response after sending")
+                done(nil)
+                return
+            }
+            guard let resp = try? JSONDecoder().decode([TimedAction].self, from: data) else {
+                print("unable to decode response")
+                done(nil)
+                return
+            }
+            done(resp)
+        }.resume()
+    }
+}
+
 public class Light: UIView {
     let onColor: UIColor
     let offColor: UIColor
