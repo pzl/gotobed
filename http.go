@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 	"time"
 
@@ -88,6 +89,12 @@ func routes(r *chi.Mux, log *logrus.Logger, pins Pins, s *Scheduler) {
 			writeErr(w, r, err, "fetching schedule failed", logrus.Fields{})
 			return
 		}
+		sort.SliceStable(sched, func(i, j int) bool {
+			if sched[i].T.Before(sched[j].T) {
+				return true
+			}
+			return false
+		})
 		writeJSON(w, r, sched)
 	}
 
