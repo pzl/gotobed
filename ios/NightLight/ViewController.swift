@@ -170,10 +170,16 @@ class ViewController: UIViewController {
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "\u{2699}\u{0000FE0E}", style: .plain, target: self, action: #selector(settingsTap))
         self.navigationItem.rightBarButtonItem?.setTitleTextAttributes([NSAttributedString.Key.font: UIFont(name: "Avenir Next", size: 27)!], for: .normal)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(didResume), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        reloadData()
+    }
+    
+    @objc func didResume() {
         reloadData()
     }
     

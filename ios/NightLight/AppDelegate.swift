@@ -48,33 +48,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         shortcutAction = shortcutItem
     }
     
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        print("became active")
-        vc?.hideFail()
-        vc?.getState { [weak self] state in
-            DispatchQueue.main.async {
-                self?.vc?.stopspin()
-            }
-            if var state = state {
-                if let action = self?.shortcutAction {
-                    switch action.type {
-                    case "Lamp": state.lamp = !state.lamp
-                    default: print("unknown action: \(action.type)")
-                    }
-                    
-                    // Reset the shorcut item so it's never processed twice.
-                    self?.shortcutAction = nil
-                }
-                
-                self?.vc?.handleState(state)
-            } else {
-                DispatchQueue.main.async {
-                    self?.vc?.showFail()
-                }
-                print("failed to fetch")
-            }
-        }
-    }
-    
 }
 
